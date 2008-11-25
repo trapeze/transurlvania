@@ -1,0 +1,7 @@
+RELEASE 0.1ALPHA
+===============
+
+Tagged release-0.1ALPHA on November 25th by Djoume Salvetti <dsalvetti@trapeze.com>
+
+
+* Initial release as a standalone application, only contains the LANGUAGE_CHOICES
