@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language, ugettext_lazy as _
 
 from multilang.choices import LANGUAGES_CHOICES
 
@@ -33,3 +33,40 @@ class Translatable(models.Model):
                 return self.translations.get(language=language_code)
         except self.DoesNotExist:
             return self
+
+
+class LangManager(models.Manager):
+    def get_query_set(self):
+        # TODO: Confirm that this is needed
+        return super(LangManager, self).get_query_set().select_related(depth=1)
+
+
+class LangAgnostic(models.Model):
+    """The language agnostic half of the two-model multilang pair"""
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        trans_str_list = [u'%s (%s)' % (obj, obj.get_language_display()) for obj in self.translations.all()]
+        return u'(%s)' % u', '.join(trans_str_list)
+
+    def get_trans_field(self, field):
+        try:
+            trans_obj = self.translations.get(language=get_language())
+        except self.DoesNotExist:
+            try:
+                trans_obj = self.translations.all()[0]
+            except IndexError:
+                return None
+        return getattr(trans_obj, field)
+
+
+
+class LangDependent(models.Model):
+    """The language dependent half of the two-model multilang pair"""
+    language = models.CharField(_('language'), blank=True, max_length=5, choices=LANGUAGES_CHOICES)
+
+    objects = LangManager()
+
+    class Meta:
+        abstract = True
