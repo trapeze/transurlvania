@@ -1,0 +1,49 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-01-08 19:38-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: models.py:9 models.py:67
+msgid "language"
+msgstr ""
+
+#: models.py:11
+msgid "translation of"
+msgstr ""
+
+#: models.py:15
+msgid "translatable"
+msgstr ""
+
+#: models.py:16
+msgid "translatables"
+msgstr ""
+
+#: tests/lang_prefixed_urls.py:8
+msgid "^LANG_CODE/"
+msgstr "^en/"
+
+#: tests/spangles_urls.py:9
+msgid "^trans-stripes/"
+msgstr ""
+
+#: tests/urls.py:9
+msgid "^trans-things/$"
+msgstr ""
+
+#: tests/urls.py:10
+msgid "^multi-module-spangles/"
+msgstr ""
