@@ -1,9 +1,11 @@
 import re
 
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver, get_callable
-from django.core.urlresolvers import NoReverseMatch, iri_to_uri
+from django.core.urlresolvers import NoReverseMatch
 from django.core.urlresolvers import get_resolver, get_script_prefix
 from django.utils.datastructures import MultiValueDict
+from django.utils.encoding import iri_to_uri, force_unicode
+from django.utils.regex_helper import normalize
 from django.utils.translation import get_language
 from django.utils.translation.trans_real import translation
 
@@ -23,9 +25,15 @@ def turl(regex, view, kwargs=None, name=None, prefix=''):
 
 
 _lang_reverse_dicts = {}
-def get_reverse_dict_for_lang(lang, resolver):
-    if lang not in _lang_reverse_dicts and hasattr(resolver.urlconf_module, 'urlpatterns'):
-        _lang_reverse_dicts[lang] = MultiValueDict()
+def get_reverse_dict_for_lang(resolver, lang):
+    if lang not in _lang_reverse_dicts:
+        _lang_reverse_dicts[lang] = _build_reverse_dict_for_lang(resolver, lang)
+    return _lang_reverse_dicts[lang]
+
+
+def _build_reverse_dict_for_lang(resolver, lang):
+    reverse_dict = MultiValueDict()
+    if hasattr(resolver.urlconf_module, 'urlpatterns'):
         for pattern in reversed(resolver.urlconf_module.urlpatterns):
             if hasattr(pattern, 'get_regex'):
                 p_pattern = pattern.get_regex(lang).pattern
@@ -38,18 +46,18 @@ def get_reverse_dict_for_lang(lang, resolver):
                     parent = normalize(pattern.get_regex(lang).pattern)
                 else:
                     parent = normalize(pattern.regex.pattern)
-                for name in pattern.reverse_dict:
-                    for matches, pat in pattern.reverse_dict.getlist(name):
+                sub_reverse_dict = _build_reverse_dict_for_lang(pattern, lang)
+                for name in sub_reverse_dict:
+                    for matches, pat in sub_reverse_dict.getlist(name):
                         new_matches = []
                         for piece, p_args in parent:
                             new_matches.extend([(piece + suffix, p_args + args) for (suffix, args) in matches])
-                        self._reverse_dict.appendlist(name, (new_matches, p_pattern + pat))
+                        reverse_dict.appendlist(name, (new_matches, p_pattern + pat))
             else:
                 bits = normalize(p_pattern)
-                self._reverse_dict.appendlist(pattern.callback, (bits, p_pattern))
-                self._reverse_dict.appendlist(pattern.name, (bits, p_pattern))
-        return _lang_reverse_dict[lang]
-    reverse_dict = property(_get_reverse_dict)
+                reverse_dict.appendlist(pattern.callback, (bits, p_pattern))
+                reverse_dict.appendlist(pattern.name, (bits, p_pattern))
+    return reverse_dict
 
 
 def reverse_for_language(viewname, lang, urlconf=None, args=None, kwargs=None, prefix=None):
@@ -63,10 +71,10 @@ def reverse_for_language(viewname, lang, urlconf=None, args=None, kwargs=None, p
     if args and kwargs:
         raise ValueError("Don't mix *args and **kwargs in call to reverse()!")
     try:
-        lookup_view = get_callable(lookup_view, True)
+        lookup_view = get_callable(viewname, True)
     except (ImportError, AttributeError), e:
         raise NoReverseMatch("Error importing '%s': %s." % (lookup_view, e))
-    possibilities = get_reverse_dict_for_lang(resolver).getlist(lookup_view)
+    possibilities = get_reverse_dict_for_lang(resolver, lang).getlist(lookup_view)
     for possibility, pattern in possibilities:
         for result, params in possibility:
             if args:
