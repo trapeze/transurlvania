@@ -1,0 +1,63 @@
+Multilang Documentation
+=======================
+
+Multilang is a suite of tools to help in the building of a multi-lingual
+Django project. It contains several components:
+
+Translatable URLs
+-----------------
+
+Use the `turl` function in urlresolvers in place of the usual `url` function
+when declaring URL patterns, combined with the `ugettext_noop` gettext function
+and the URLs you declare will become translatable using the normal gettext
+translation system.
+
+Language Setting Via URL
+------------------------
+
+Use LangInURLMiddleware and special root URLconf to embed the language code
+in the URL path.
+
+This supersedes Django's usual language detection, so any URL with a language
+code in it has a predictable language when visited. This also means that the
+individual, language-specific resources of the site can all be identified
+by URL.
+
+Translatable DB
+---------------
+
+The two-model translation system that's provided here requires that you
+manually specify a foreign key from your `LangDependent` model to your
+`LangAgnostic` or "core" model. This FK should be named "core" and should
+define its related_name as "translations". You also must define this
+LangAgnostic model even if you have no "language agnostic" fields to put
+in it, since it is used for finding translations.
+
+Translation Editing
+-------------------
+
+The two-model translation system can be presented in the admin as
+one parent form and a series of inline forms for each translation.
+
+Translation Switching
+---------------------
+
+Add MultilangMiddleware to the list of middleware classes and add the
+"translate" context processor to the list of template context processors
+to use the "`this_page_in_lang`" template tag. It will attempt to find
+the URL that represents the page being displayed, but in the language requested.
+
+Use the provided decorators to annotate any views whose translations should
+be determined in a special way.
+
+TODO: An additional template tag should be provided that generates a list
+of the available translations of the current page.
+
+TODO: Should there be a way for translations to "fall back" to other locations
+on the site if a page-specific translation can't be found?
+
+Language Hiding
+---------------
+
+The BlockLocaleMiddleware will block non-admins from accessing the site in any language
+listed in the `BLOCKED_LANGUAGES` setting in the settings file.

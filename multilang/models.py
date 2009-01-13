@@ -1,3 +1,4 @@
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils.translation import get_language, ugettext_lazy as _
 
@@ -70,3 +71,14 @@ class LangDependent(models.Model):
 
     class Meta:
         abstract = True
+
+    def get_translation(self, lang):
+        try:
+            return self.core.translations.get(language=lang)
+        except AttributeError:
+            raise ImproperlyConfigured('get_translation expects subclasses of '
+                                 'LangDependent to have a "core" field that '
+                                 'points to the LangAgnostic object, with a '
+                                 'related_name of "translations".')
+        except self.DoesNotExist:
+            return self
