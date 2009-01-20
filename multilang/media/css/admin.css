@@ -1,0 +1,27 @@
+ul.trans-tabs {
+    float: left;
+    display: inline;
+    margin: 5px 0px 0px 0px;
+    padding: 0px;
+}
+
+ul.trans-tabs li {
+    float: left;
+    display: inline;
+    list-style: none;
+    margin: 0px 15px 0px 0px;
+}
+
+.submit-row input {
+    display: none;
+}
+
+.submit-row input.add-trans {
+    display: inline;
+}
+
+.submit-row p.deletelink-box {
+    float: none;
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
