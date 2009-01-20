@@ -29,7 +29,7 @@ class Translatable(models.Model):
                 if self.translation_of.language == language_code:
                     return self.translation_of
                 else:
-                        return self.translation_of.translations.exclude(pk=self.pk).get(language=language_code)
+                    return self.translation_of.translations.exclude(pk=self.pk).get(language=language_code)
             else:
                 return self.translations.get(language=language_code)
         except self.DoesNotExist:
@@ -54,7 +54,7 @@ class LangAgnostic(models.Model):
     def get_trans_field(self, field):
         try:
             trans_obj = self.translations.get(language=get_language())
-        except self.DoesNotExist:
+        except self.translations.model.DoesNotExist:
             try:
                 trans_obj = self.translations.all()[0]
             except IndexError:
