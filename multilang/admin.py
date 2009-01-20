@@ -81,18 +81,18 @@ class MultiLangModelAdmin(admin.ModelAdmin):
             trans_obj = None
         
         if trans_obj:
-            return "../../../%(app)s/%(model)s/%(id)s/" % {
+            return ("../../../%(app)s/%(model)s/%(id)s/" % {
                 "app": self.ml_trans_model._meta.app_label,
                 "model": self.ml_trans_model.__name__.lower(),
                 "id": trans_obj._get_pk_val(),
-            }
+            }, True)
         else:
-            return "../../../%(app)s/%(model)s/add/?language=%(lang)s&core=%(id)s" % {
+            return ("../../../%(app)s/%(model)s/add/?language=%(lang)s&core=%(id)s" % {
                 "app": self.ml_trans_model._meta.app_label,
                 "model": self.ml_trans_model.__name__.lower(),
                 "lang": lang,
                 "id": obj._get_pk_val(),
-            }
+            }, False)
     
     
     def _construct_trans_links(self, obj):
@@ -102,12 +102,16 @@ class MultiLangModelAdmin(admin.ModelAdmin):
             trans_links.append({
                 "name": obj,
                 "url": self._construct_core_url(obj),
+                "active": True,
             })
         
         for lang in dict(settings.LANGUAGES):
+            url = self._construct_trans_url(lang, obj)
+            
             trans_links.append({
                 "name": dict(settings.LANGUAGES)[lang],
-                "url": self._construct_trans_url(lang, obj),
+                "url": url[0],
+                "active": url[1],
             })
         
         return trans_links
@@ -128,9 +132,9 @@ class MultiLangModelAdmin(admin.ModelAdmin):
             lang = request.POST.get("_addtrans_lang", settings.LANGUAGES[0][0])
             
             if self.ml_core:
-                return HttpResponseRedirect(self._construct_trans_url(lang, obj))
+                return HttpResponseRedirect(self._construct_trans_url(lang, obj)[0])
             else:
-                return HttpResponseRedirect(self._construct_trans_url(lang, obj.core))
+                return HttpResponseRedirect(self._construct_trans_url(lang, obj.core)[0])
         else:
             return super(MultiLangModelAdmin, self).response_add(request, obj, post_url_continue)
     
@@ -150,9 +154,9 @@ class MultiLangModelAdmin(admin.ModelAdmin):
             lang = request.POST.get("_addtrans_lang", settings.LANGUAGES[0][0])
             
             if self.ml_core:
-                return HttpResponseRedirect(self._construct_trans_url(lang, obj))
+                return HttpResponseRedirect(self._construct_trans_url(lang, obj)[0])
             else:
-                return HttpResponseRedirect(self._construct_trans_url(lang, obj.core))
+                return HttpResponseRedirect(self._construct_trans_url(lang, obj.core)[0])
         else:
             return super(MultiLangModelAdmin, self).response_change(request, obj)
     
@@ -172,6 +176,8 @@ class MultiLangModelAdmin(admin.ModelAdmin):
         context = {
             "trans_links": trans_links,
             "trans_langs": settings.LANGUAGES,
+            "trans_active_lang": request.GET.get("language", None),
+            "trans_core": self.ml_core,
         }
         
         context.update(extra_context or {})
@@ -186,16 +192,20 @@ class MultiLangModelAdmin(admin.ModelAdmin):
             obj = None
         
         trans_links = []
+        trans_active_lang = None
         
         if obj:
             if self.ml_core:
                 trans_links.extend(self._construct_trans_links(obj))
             else:
                 trans_links.extend(self._construct_trans_links(obj.core))
+                trans_active_lang = obj.language
         
         context = {
             "trans_links": trans_links,
             "trans_langs": settings.LANGUAGES,
+            "trans_active_lang": trans_active_lang,
+            "trans_core": self.ml_core,
         }
         
         context.update(extra_context or {})

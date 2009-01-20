@@ -1,23 +1,11 @@
 {% extends "admin/change_form.html" %}
 
-{% load i18n %}
+{% block bodyclass %}{{ block.super }} {% if not trans_core %}trans-admin{% endif %}{% endblock %}
+
+{% block form_top %}
+{% include "admin/includes/trans_links.html" %}
+{% endblock %}
 
 {% block after_related_objects %}
-
-<div class="submit-row">
-    <ul class="trans-tabs">
-        {% for lang in trans_links %}
-        <li><a href="{{ lang.url }}">{{ lang.name }}</a></li>
-        {% endfor %}
-    </ul>
-    
-    <input type="submit" value="{% trans 'Save and Add/Edit Translation:' %}" name="_addtrans" class="add-trans" {{ onclick_attrib }} />
-    
-    <select name="_addtrans_lang">
-        {% for lang in trans_langs %}
-        <option value="{{ lang.0 }}">{{ lang.1 }}</option>
-        {% endfor %}
-    </select>
-</div>
-
+{% include "admin/includes/trans_links.html" %}
 {% endblock %}

@@ -1,7 +1,16 @@
+/*
+ *	Title: CSS Styles for multilang admin
+ *	Date: January 20, 2008
+ *  Author: Taylan Pince (tpince at trapeze dot com)
+ */
+
+
+/* @group Admin */
+
 ul.trans-tabs {
     float: left;
     display: inline;
-    margin: 5px 0px 0px 0px;
+    margin: 2px 0px 0px 0px;
     padding: 0px;
 }
 
@@ -10,18 +19,38 @@ ul.trans-tabs li {
     display: inline;
     list-style: none;
     margin: 0px 15px 0px 0px;
+    background: #FFF url("../../admin/img/admin/nav-bg.gif") top left repeat-x;
+    border-color: #DDDDDD #AAAAAA #AAAAAA #DDDDDD;
+    border-style: solid;
+    border-width: 1px;
+    padding: 3px;
 }
 
-.submit-row input {
+ul.trans-tabs li.active {
+    background: #7CA0C7 url("../../admin/img/admin/default-bg.gif") top left repeat-x;
+    border: 1px solid #5B80B2;
+}
+
+ul.trans-tabs li.active a {
+    color: #333;
+}
+
+ul.trans-tabs li.active a:hover {
+    color: #000;
+}
+
+body.trans-admin .submit-row input {
     display: none;
 }
 
-.submit-row input.add-trans {
+body.trans-admin .submit-row input.add-trans {
     display: inline;
 }
 
-.submit-row p.deletelink-box {
+body.trans-admin .submit-row p.deletelink-box {
     float: none;
     margin-bottom: 0px;
     margin-top: 0px;
 }
+
+/* @end */

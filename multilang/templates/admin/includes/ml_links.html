@@ -1,0 +1,17 @@
+{% load i18n %}
+
+<div class="submit-row">
+    <ul class="trans-tabs">
+        {% for lang in trans_links %}
+        <li{% if lang.active %} class="active"{% endif %}><a href="{{ lang.url }}">{{ lang.name }}</a></li>
+        {% endfor %}
+    </ul>
+    
+    <input type="submit" value="{% trans 'Save and Add/Edit Translation:' %}" name="_addtrans" class="add-trans" {{ onclick_attrib }} />
+    
+    <select name="_addtrans_lang">
+        {% for lang in trans_langs %}
+        <option value="{{ lang.0 }}"{% ifequal trans_active_lang lang.0 %} selected="selected"{% endifequal %}>{{ lang.1 }}</option>
+        {% endfor %}
+    </select>
+</div>
