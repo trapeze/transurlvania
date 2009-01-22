@@ -12,9 +12,9 @@ class MultiLangModelAdmin(admin.ModelAdmin):
     A wrapper around ModelAdmin that allows translatable models to be linked
     to from the change view and vice versa.
     
-    It uses the custom variables `ml_relation_name` and `ml_field_name` to 
-    introspect the given models, these can be overridden with different
-    values if the models are using other names.
+    It uses the custom variables `ml_relation_name`, `ml_core_field_name` and
+    `ml_lang_field_name` to introspect the given models, these can be
+    overridden with different values if the models are using other names.
     
     Subclass `LangDependentModelAdmin` or `LangAgnosticModelAdmin` when 
     building admin classes, `MultiLangModelAdmin` is used as a shared base 
@@ -23,7 +23,8 @@ class MultiLangModelAdmin(admin.ModelAdmin):
     change_form_template = "admin/ml_change_form.html"
 
     ml_relation_name = "translations"
-    ml_field_name = "core"
+    ml_core_field_name = "core"
+    ml_lang_field_name = "language"
     ml_trans_model = None
     ml_core_model = None
 
@@ -38,7 +39,10 @@ class MultiLangModelAdmin(admin.ModelAdmin):
 
     def _construct_trans_url(self, lang, obj):
         try:
-            trans_obj = self.ml_trans_model._default_manager.get(language=lang, core=obj)
+            trans_obj = self.ml_trans_model._default_manager.get(**{
+                self.ml_lang_field_name: lang,
+                self.ml_core_field_name: obj,
+            })
         except self.ml_trans_model.DoesNotExist:
             trans_obj = None
         
@@ -49,10 +53,12 @@ class MultiLangModelAdmin(admin.ModelAdmin):
                 "id": trans_obj._get_pk_val(),
             }, trans_obj)
         else:
-            return ("../../../%(app)s/%(model)s/add/?language=%(lang)s&core=%(id)s" % {
+            return ("../../../%(app)s/%(model)s/add/?%(lang_field)s=%(lang)s&%(core_field)s=%(id)s" % {
                 "app": self.ml_trans_model._meta.app_label,
                 "model": self.ml_trans_model.__name__.lower(),
+                "lang_field": self.ml_lang_field_name,
                 "lang": lang,
+                "core_field": self.ml_core_field_name,
                 "id": obj._get_pk_val(),
             }, None)
 
@@ -95,18 +101,18 @@ class LangDependentModelAdmin(MultiLangModelAdmin):
         super(LangDependentModelAdmin, self).__init__(model, admin_site)
         
         try:
-            field = model._meta.get_field_by_name(self.ml_field_name)
+            field = model._meta.get_field_by_name(self.ml_core_field_name)
             
             self.ml_trans_model = model
             self.ml_core_model = field[0].rel.to
         except FieldDoesNotExist:
             raise ImproperlyConfigured("Field %(field)s could not be found in the model %(model)s." % {
-                "field": self.ml_field_name,
+                "field": self.ml_core_field_name,
                 "model": model.__name__,
             })
         except AttributeError:
             raise ImproperlyConfigured("Field %(field)s in the model %(model)s is not a ForeignKey." % {
-                "field": self.ml_field_name,
+                "field": self.ml_core_field_name,
                 "model": model.__name__,
             })
     
@@ -120,7 +126,7 @@ class LangDependentModelAdmin(MultiLangModelAdmin):
 
             lang = request.POST.get("_addtrans_lang", settings.LANGUAGES[0][0])
 
-            return HttpResponseRedirect(self._construct_trans_url(lang, obj.core)[0])
+            return HttpResponseRedirect(self._construct_trans_url(lang, obj.__getattribute__(self.ml_core_field_name))[0])
         else:
             return super(LangDependentModelAdmin, self).response_add(request, obj, post_url_continue)
 
@@ -134,7 +140,7 @@ class LangDependentModelAdmin(MultiLangModelAdmin):
 
             lang = request.POST.get("_addtrans_lang", settings.LANGUAGES[0][0])
 
-            return HttpResponseRedirect(self._construct_trans_url(lang, obj.core)[0])
+            return HttpResponseRedirect(self._construct_trans_url(lang, obj.__getattribute__(self.ml_core_field_name))[0])
         else:
             return super(LangDependentModelAdmin, self).response_change(request, obj)
 
@@ -142,9 +148,9 @@ class LangDependentModelAdmin(MultiLangModelAdmin):
     def add_view(self, request, form_url='', extra_context=None):
         trans_links = []
 
-        if request.GET.has_key("core"):
+        if request.GET.has_key(self.ml_core_field_name):
             try:
-                obj = self.ml_core_model._default_manager.get(pk=request.GET.get("core"))
+                obj = self.ml_core_model._default_manager.get(pk=request.GET.get(self.ml_core_field_name))
             except self.ml_core_model.DoesNotExist:
                 obj = None
 
@@ -154,7 +160,7 @@ class LangDependentModelAdmin(MultiLangModelAdmin):
         context = {
             "trans_links": trans_links,
             "trans_langs": settings.LANGUAGES,
-            "trans_active_lang": request.GET.get("language", None),
+            "trans_active_lang": request.GET.get(self.ml_lang_field_name, None),
             "trans_core": False,
         }
 
@@ -173,8 +179,8 @@ class LangDependentModelAdmin(MultiLangModelAdmin):
         trans_active_lang = None
 
         if obj:
-            trans_links.extend(self._construct_trans_links(obj.core))
-            trans_active_lang = obj.language
+            trans_links.extend(self._construct_trans_links(obj.__getattribute__(self.ml_core_field_name)))
+            trans_active_lang = obj.__getattribute__(self.ml_lang_field_name)
 
         context = {
             "trans_links": trans_links,
