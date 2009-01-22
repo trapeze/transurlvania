@@ -73,13 +73,13 @@ class MultiLangModelAdmin(admin.ModelAdmin):
             "code": "",
         })
         
-        for lang in dict(settings.LANGUAGES):
-            url = self._construct_trans_url(lang, obj)
+        for lang, lang_name in dict(settings.LANGUAGES).iteritems():
+            url, trans_obj = self._construct_trans_url(lang, obj)
             
             trans_links.append({
-                "name": dict(settings.LANGUAGES)[lang],
-                "url": url[0],
-                "obj": url[1],
+                "name": lang_name,
+                "url": url,
+                "obj": trans_obj,
                 "code": lang,
             })
         
@@ -251,7 +251,7 @@ class LangAgnosticModelAdmin(MultiLangModelAdmin):
         context = {
             "trans_links": [],
             "trans_langs": settings.LANGUAGES,
-            "trans_active_lang": request.GET.get("language", None),
+            "trans_active_lang": None,
             "trans_core": True,
         }
 
