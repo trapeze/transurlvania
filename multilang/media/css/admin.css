@@ -53,4 +53,9 @@ body.trans-admin .submit-row p.deletelink-box {
     margin-top: 0px;
 }
 
+body.trans-admin div.language,
+body.trans-admin div.core {
+    display: none;
+}
+
 /* @end */
