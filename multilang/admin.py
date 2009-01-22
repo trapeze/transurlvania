@@ -47,14 +47,14 @@ class MultiLangModelAdmin(admin.ModelAdmin):
                 "app": self.ml_trans_model._meta.app_label,
                 "model": self.ml_trans_model.__name__.lower(),
                 "id": trans_obj._get_pk_val(),
-            }, True)
+            }, trans_obj)
         else:
             return ("../../../%(app)s/%(model)s/add/?language=%(lang)s&core=%(id)s" % {
                 "app": self.ml_trans_model._meta.app_label,
                 "model": self.ml_trans_model.__name__.lower(),
                 "lang": lang,
                 "id": obj._get_pk_val(),
-            }, False)
+            }, None)
 
 
     def _construct_trans_links(self, obj):
@@ -63,7 +63,8 @@ class MultiLangModelAdmin(admin.ModelAdmin):
         trans_links.append({
             "name": obj,
             "url": self._construct_core_url(obj),
-            "active": True,
+            "obj": obj,
+            "code": "",
         })
         
         for lang in dict(settings.LANGUAGES):
@@ -72,7 +73,8 @@ class MultiLangModelAdmin(admin.ModelAdmin):
             trans_links.append({
                 "name": dict(settings.LANGUAGES)[lang],
                 "url": url[0],
-                "active": url[1],
+                "obj": url[1],
+                "code": lang,
             })
         
         return trans_links

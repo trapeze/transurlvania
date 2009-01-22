@@ -26,12 +26,38 @@ ul.trans-tabs li {
     padding: 3px;
 }
 
+ul.trans-tabs li a:link,
+ul.trans-tabs li a:active,
+ul.trans-tabs li a:visited {
+    color: #999;
+}
+
+ul.trans-tabs li a:hover {
+    color: #333;
+}
+
+ul.trans-tabs li.exists {
+    border: 1px solid #5B80B2;
+}
+
+ul.trans-tabs li.exists a:link,
+ul.trans-tabs li.exists a:active,
+ul.trans-tabs li.exists a:visited {
+    color: #5B80B2;
+}
+
+ul.trans-tabs li.exists a:hover {
+    color: #003366;
+}
+
 ul.trans-tabs li.active {
     background: #7CA0C7 url("../../admin/img/admin/default-bg.gif") top left repeat-x;
     border: 1px solid #5B80B2;
 }
 
-ul.trans-tabs li.active a {
+ul.trans-tabs li.active a:link,
+ul.trans-tabs li.active a:active,
+ul.trans-tabs li.active a:visited {
     color: #333;
 }
 

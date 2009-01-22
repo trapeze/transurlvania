@@ -3,7 +3,7 @@
 <div class="submit-row">
     <ul class="trans-tabs">
         {% for lang in trans_links %}
-        <li{% if lang.active %} class="active"{% endif %}><a href="{{ lang.url }}">{{ lang.name }}</a></li>
+        <li class="{% if lang.obj %}exists{% ifequal lang.obj original %} active{% endifequal %}{% else %}{% ifequal trans_active_lang lang.code %} active{% endifequal %}{% endif %}"><a href="{{ lang.url }}">{{ lang.name }}</a></li>
         {% endfor %}
     </ul>
     
