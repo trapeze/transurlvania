@@ -6,11 +6,12 @@ DATABASE_NAME = os.path.join(os.path.dirname(__file__), 'multilang_test.db')
 LANGUAGE_CODE = 'en'
 
 gettext = lambda s: s
+
 LANGUAGES = (
     ('en', gettext('English')),
     ('fr', gettext('French')),
     ('de', gettext('German')),
-    )
+)
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -24,12 +25,13 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'multilang.tests.lang_prefixed_urls'
 
 INSTALLED_APPS = (
-        'django.contrib.auth',
-        'django.contrib.admin',
-        'django.contrib.contenttypes',
-        'django.contrib.sessions',
-        'multilang',
-        'multilang.tests',
+    'django.contrib.auth',
+    'django.contrib.admin',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+
+    'multilang',
+    'multilang.tests',
 )
 
 TEMPLATE_DIRS = (

@@ -24,3 +24,7 @@ def spangles_stars(request):
 
 def spangles_stripes(request):
     return HttpResponse('A leopard never changes them...')
+
+
+def spangles_home(request):
+    return HttpResponse('Home')

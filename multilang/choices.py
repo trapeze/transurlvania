@@ -6,5 +6,5 @@ from django.utils.translation import ugettext_lazy as _
 # want the translation to be available.
 
 LANGUAGES_CHOICES = [
-        (code, _(description)) for (code, description) in settings.LANGUAGES
-        ]
+    (code, _(description)) for (code, description) in settings.LANGUAGES
+]
