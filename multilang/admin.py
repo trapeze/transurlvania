@@ -106,12 +106,12 @@ class LangDependentModelAdmin(MultiLangModelAdmin):
             self.ml_trans_model = model
             self.ml_core_model = field[0].rel.to
         except FieldDoesNotExist:
-            raise ImproperlyConfigured("Field %(field)s could not be found in the model %(model)s." % {
+            raise ImproperlyConfigured(_("Field %(field)s could not be found in the model %(model)s.") % {
                 "field": self.ml_core_field_name,
                 "model": model.__name__,
             })
         except AttributeError:
-            raise ImproperlyConfigured("Field %(field)s in the model %(model)s is not a ForeignKey." % {
+            raise ImproperlyConfigured(_("Field %(field)s in the model %(model)s is not a ForeignKey.") % {
                 "field": self.ml_core_field_name,
                 "model": model.__name__,
             })
@@ -208,12 +208,12 @@ class LangAgnosticModelAdmin(MultiLangModelAdmin):
             self.ml_trans_model = field[0].model
             self.ml_core_model = model
         except FieldDoesNotExist:
-            raise ImproperlyConfigured("Relation %(rel)s could not be found in the model %(model)s." % {
+            raise ImproperlyConfigured(_("Relation %(rel)s could not be found in the model %(model)s.") % {
                 "rel": self.ml_relation_name,
                 "model": model.__name__,
             })
         except AttributeError:
-            raise ImproperlyConfigured("Relation %(rel)s in the model %(model)s is not many-to-one." % {
+            raise ImproperlyConfigured(_("Relation %(rel)s in the model %(model)s is not many-to-one.") % {
                 "rel": self.ml_relation_name,
                 "model": model.__name__,
             })
@@ -240,7 +240,7 @@ class LangAgnosticModelAdmin(MultiLangModelAdmin):
                 'obj': force_unicode(obj),
             })
 
-            lang = request.POST.get("_addtrans_lang", settings.LANGUAGES[0][0])
+            lang = request.POST.get("_addtrans_lang", settings.LANGUAGE_CODE)
 
             return HttpResponseRedirect(self._construct_trans_url(lang, obj)[0])
         else:
