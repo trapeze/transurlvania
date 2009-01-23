@@ -1,3 +1,27 @@
+RELEASE 0.3ALPHA
+================
+
+Tagged release-0.3ALPHA on January 23, 2009 by Taylan Pince <tpince@trapeze.com>.
+
+New Features
+------------
+
+* Model structure has been changed to use two separate models: `LangAgnostic`
+and `LangDependent`
+
+* URL translations and language-in-URL support is now available
+
+* Two `ModelAdmin` base classes are now provided to create a better workflow
+in the Django admin for translatable content
+
+Bug Fixes
+---------
+
+* Fixed a bug in the LangDependent model that cause the get_translation method
+to fail when there are no available translations
+
+* * *
+
 RELEASE 0.2ALPHA
 ================
 
@@ -5,6 +29,8 @@ Tagged release-0.2ALPHA on December 2th by Sylvain Toé <stoe@trapeze.com>
 
 
 * Added translatable abstract class in models
+
+* * *
 
 
 RELEASE 0.1ALPHA
