@@ -17,11 +17,9 @@ class NewsStoryCore(LangAgnostic):
     class Meta:
         verbose_name = _('news story')
         verbose_name_plural = _('news stories')
-    
+
     def __unicode__(self):
-        headline = self.headline
-        
-        if headline:
+        if self.headline:
             return u"News Story: %s" % self.headline
         else:
             return u"News Story"
