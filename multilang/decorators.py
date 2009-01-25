@@ -16,6 +16,7 @@ def translate_using_custom_scheme(scheme):
 def do_not_translate(view_func):
     return _translate_using(BasicScheme())(view_func)
 
+
 def _translate_using(scheme):
     def translate_decorator(view_func):
         def inner(request, *args, **kwargs):
