@@ -55,6 +55,8 @@ of the available translations of the current page.
 TODO: Should there be a way for translations to "fall back" to other locations
 on the site if a page-specific translation can't be found?
 
+TODO: What is the purpose of multilang_permalink? When should we use it?
+
 Language Hiding
 ---------------
 
