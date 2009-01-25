@@ -38,4 +38,3 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.realpath(os.path.dirname(__file__)), 'templates/'),
 )
 
-AUTH_PROFILE_MODULE = "profiles.userprofile"
