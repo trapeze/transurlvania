@@ -23,6 +23,9 @@ code in it has a predictable language when visited. This also means that the
 individual, language-specific resources of the site can all be identified
 by URL.
 
+See `multilang/tests/settings.py` and `multilang/tests/lang_prefixed_urls.py`
+for an example.
+
 Translatable DB
 ---------------
 
@@ -33,11 +36,7 @@ define its related_name as "translations". You also must define this
 LangAgnostic model even if you have no "language agnostic" fields to put
 in it, since it is used for finding translations.
 
-Translation Editing
--------------------
-
-The two-model translation system can be presented in the admin as
-one parent form and a series of inline forms for each translation.
+See `multilang/tests/models.py` for an example.
 
 Translation Switching
 ---------------------
@@ -74,3 +73,5 @@ Also make sure that the multilang/media folder is symlinked from your project's
 media folder as multilang:
 
     ln -s path/to/multilang/media project_name/media/multilang
+
+See `multilang/tests/admin.py` for an example.
