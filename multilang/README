@@ -40,7 +40,7 @@ Translatable DB
 ---------------
 
 The two-model translation system that's provided here requires that you
-manually specify a foreign key from your `LangDependent` model to your
+manually specify a foreign key from your `LangTranslatable` model to your
 `LangAgnostic` or "core" model. This FK should be named "core" and should
 define its related_name as "translations". You also must define this
 LangAgnostic model even if you have no "language agnostic" fields to put
@@ -79,7 +79,7 @@ Admin
 
 Two ModelAdmin classes are provided under multilang.admin to create a better 
 workflow in the Django administration when adding and editing multilang models.
-Subclass LangDependentModelAdmin and LangAgnosticModelAdmin accordingly when 
+Subclass LangTranslatableModelAdmin and LangAgnosticModelAdmin accordingly when 
 creating admin classes for translatable model pairs.
 
 Also make sure that the multilang/media folder is symlinked from your project's

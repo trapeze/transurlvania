@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from multilang.decorators import multilang_permalink
-from multilang.models import LangAgnostic, LangDependent
+from multilang.models import LangAgnostic, LangTranslatable
 
 
 class NewsStoryCore(LangAgnostic):
@@ -29,7 +29,7 @@ class NewsStoryCore(LangAgnostic):
         return self.get_trans_field('headline')
 
 
-class NewsStory(LangDependent):
+class NewsStory(LangTranslatable):
     """
     A news story that can be translated into multiple languages
     """

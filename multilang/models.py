@@ -5,7 +5,7 @@ from django.utils.translation import get_language, ugettext_lazy as _
 from multilang.choices import LANGUAGES_CHOICES
 
 
-class Translatable(models.Model):
+class LangSpecific(models.Model):
     """An abstract model that provides the language field"""
 
     language = models.CharField(_('language'), blank=True, max_length=5, choices=LANGUAGES_CHOICES)
@@ -41,7 +41,7 @@ class LangAgnostic(models.Model):
 
 
 
-class LangDependent(Translatable):
+class LangTranslatable(LangSpecific):
     """The language dependent half of the two-model multilang pair"""
 
     objects = LangManager()
@@ -54,7 +54,7 @@ class LangDependent(Translatable):
             return self.core.translations.get(language=lang)
         except AttributeError:
             raise ImproperlyConfigured('get_translation expects subclasses of '
-                                 'LangDependent to have a "core" field that '
+                                 'LangTranslatable to have a "core" field that '
                                  'points to the LangAgnostic object, with a '
                                  'related_name of "translations".')
         except self.DoesNotExist:

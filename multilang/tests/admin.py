@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from multilang.admin import LangDependentModelAdmin, LangAgnosticModelAdmin
+from multilang.admin import LangTranslatableModelAdmin, LangAgnosticModelAdmin
 
 from multilang.tests.models import NewsStoryCore, NewsStory
 
 
-class NewsStoryAdmin(LangDependentModelAdmin):
+class NewsStoryAdmin(LangTranslatableModelAdmin):
     list_display = ('headline', 'language',)
     list_filter = ('language',)
 

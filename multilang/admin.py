@@ -16,7 +16,7 @@ class MultiLangModelAdmin(admin.ModelAdmin):
     `ml_lang_field_name` to introspect the given models, these can be
     overridden with different values if the models are using other names.
     
-    Subclass `LangDependentModelAdmin` or `LangAgnosticModelAdmin` when 
+    Subclass `LangTranslatableModelAdmin` or `LangAgnosticModelAdmin` when 
     building admin classes, `MultiLangModelAdmin` is used as a shared base 
     class only - it should not be subclassed directly.
     """
@@ -92,13 +92,13 @@ class MultiLangModelAdmin(admin.ModelAdmin):
         }
 
 
-class LangDependentModelAdmin(MultiLangModelAdmin):
+class LangTranslatableModelAdmin(MultiLangModelAdmin):
     """
     A subclass of `MultiLangModelAdmin` that should be used for models that 
     have translatable fields and that link to a core model.
     """
     def __init__(self, model, admin_site):
-        super(LangDependentModelAdmin, self).__init__(model, admin_site)
+        super(LangTranslatableModelAdmin, self).__init__(model, admin_site)
         
         try:
             field = model._meta.get_field_by_name(self.ml_core_field_name)
@@ -128,7 +128,7 @@ class LangDependentModelAdmin(MultiLangModelAdmin):
 
             return HttpResponseRedirect(self._construct_trans_url(lang, obj.__getattribute__(self.ml_core_field_name))[0])
         else:
-            return super(LangDependentModelAdmin, self).response_add(request, obj, post_url_continue)
+            return super(LangTranslatableModelAdmin, self).response_add(request, obj, post_url_continue)
 
 
     def response_change(self, request, obj):
@@ -142,7 +142,7 @@ class LangDependentModelAdmin(MultiLangModelAdmin):
 
             return HttpResponseRedirect(self._construct_trans_url(lang, obj.__getattribute__(self.ml_core_field_name))[0])
         else:
-            return super(LangDependentModelAdmin, self).response_change(request, obj)
+            return super(LangTranslatableModelAdmin, self).response_change(request, obj)
 
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -166,7 +166,7 @@ class LangDependentModelAdmin(MultiLangModelAdmin):
 
         context.update(extra_context or {})
 
-        return super(LangDependentModelAdmin, self).add_view(request, form_url, context)
+        return super(LangTranslatableModelAdmin, self).add_view(request, form_url, context)
 
 
     def change_view(self, request, object_id, extra_context=None):
@@ -191,7 +191,7 @@ class LangDependentModelAdmin(MultiLangModelAdmin):
 
         context.update(extra_context or {})
 
-        return super(LangDependentModelAdmin, self).change_view(request, object_id, context)
+        return super(LangTranslatableModelAdmin, self).change_view(request, object_id, context)
 
 
 class LangAgnosticModelAdmin(MultiLangModelAdmin):
