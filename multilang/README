@@ -12,6 +12,16 @@ when declaring URL patterns, combined with the `ugettext_noop` gettext function
 and the URLs you declare will become translatable using the normal gettext
 translation system.
 
+Any language-aware models that define `get_absolute_url` should decorate it with
+`multilang_permalink`, from `multilang.decorators` so that the returned URLs
+will be properly translated to the language of the object. The method should
+return a list or tuple with this pattern:
+
+`('name_of_view_or_url', language_of_object, view_args, view_kwargs)`
+
+`language_of_object` should be the language code of the object, so if the
+model uses multilang's translatable DB solution, it would be `self.language`.
+
 Language Setting Via URL
 ------------------------
 
@@ -49,13 +59,14 @@ the URL that represents the page being displayed, but in the language requested.
 Use the provided decorators to annotate any views whose translations should
 be determined in a special way.
 
+To make a model compatible with this system, it needs to implement a
+`get_translation` method. The provided translatable DB solution does this.
+
 TODO: An additional template tag should be provided that generates a list
 of the available translations of the current page.
 
 TODO: Should there be a way for translations to "fall back" to other locations
 on the site if a page-specific translation can't be found?
-
-TODO: What is the purpose of multilang_permalink? When should we use it?
 
 Language Hiding
 ---------------
