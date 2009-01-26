@@ -1,5 +1,7 @@
-from django.views.generic import simple
+from django.views.generic import simple, list_detail
 from django.http import HttpResponse
+
+from multilang.tests.models import NewsStory
 
 
 def multilang_home(request):
@@ -28,3 +30,13 @@ def spangles_stripes(request):
 
 def spangles_home(request):
     return HttpResponse('Home')
+
+
+def news_story_detail(request, slug):
+    return list_detail.object_detail(
+            request,
+            NewsStory.objects.all(),
+            slug_field='slug',
+            slug=slug,
+            template_name='multilang_tests/newsstory_detail.html'
+            )

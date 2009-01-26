@@ -1,5 +1,7 @@
+import re
+
 from django.contrib.auth.models import User
-from django.core.urlresolvers import get_resolver
+from django.core.urlresolvers import get_resolver, reverse
 from django.test import TestCase, Client
 from django.utils import translation
 
@@ -50,6 +52,24 @@ class TransURLTestCase(TestCase):
         translation.activate('fr')
         self.assertEqual(self.resolver.resolve('/module-multi-de-spangles/trans-bandes/')[0], spangles_stripes)
 
+    def testRootURLReverses(self):
+        translation.activate('en')
+        self.assertEqual(reverse(home, 'multilang.tests.urls'), '/')
+        translation.activate('fr')
+        self.assertEqual(reverse(home, 'multilang.tests.urls'), '/')
+
+    def testNormalURLReverses(self):
+        translation.activate('en')
+        self.assertEqual(reverse(stuff, 'multilang.tests.urls'), '/non-trans-stuff/')
+        translation.activate('fr')
+        self.assertEqual(reverse(stuff, 'multilang.tests.urls'), '/non-trans-stuff/')
+
+    def testTransReverses(self):
+        translation.activate('en')
+        self.assertEqual(reverse(things, 'multilang.tests.urls'), '/trans-things/')
+        translation.activate('fr')
+        self.assertEqual(reverse(things, 'multilang.tests.urls'), '/trans-chose/')
+
 
 class LangInURLTestCase(TestCase):
     """
@@ -89,6 +109,26 @@ class LangInURLTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'multilang_tests/things.html')
         self.assertEqual(response.context.get('LANGUAGE_CODE', None), 'fr')
+
+
+class LanguageSwitchingTestCase(TestCase):
+    fixtures = ['test.json']
+    """
+    Test the language switching functionality of multilang.
+    """
+    def setUp(self):
+        self.client = Client()
+        self.french_version_anchor_re = re.compile(r'<a class="french-version-link" href="([^"]*)">')
+
+    def testDefaultViewBasedSwitching(self):
+        response = self.client.get('/en/trans-things/')
+        french_version_url = self.french_version_anchor_re.search(response.content).group(1)
+        self.assertEqual(french_version_url, '/fr/trans-chose/')
+
+    def testDefaultObjectBasedSwitching(self):
+        response = self.client.get('/en/news-story/english-test-story/')
+        french_version_url = self.french_version_anchor_re.search(response.content).group(1)
+        self.assertEqual(french_version_url, '/fr/nouvelle/histoire-du-test-francais/')
 
 
 class MultiLangAdminTestCase(TestCase):

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-01-08 19:38-0500\n"
+"POT-Creation-Date: 2009-01-26 17:59-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,34 +16,116 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: models.py:9 models.py:67
-msgid "language"
+#: admin.py:109
+#, python-format
+msgid "Field %(field)s could not be found in the model %(model)s."
+msgstr ""
+
+#: admin.py:114
+#, python-format
+msgid "Field %(field)s in the model %(model)s is not a ForeignKey."
+msgstr ""
+
+#: admin.py:122 admin.py:224
+#, python-format
+msgid "The %(name)s \"%(obj)s\" was added successfully."
+msgstr ""
+
+#: admin.py:136 admin.py:238
+#, python-format
+msgid "The %(name)s \"%(obj)s\" was changed successfully."
+msgstr ""
+
+#: admin.py:211
+#, python-format
+msgid "Relation %(rel)s could not be found in the model %(model)s."
+msgstr ""
+
+#: admin.py:216
+#, python-format
+msgid "Relation %(rel)s in the model %(model)s is not many-to-one."
 msgstr ""
 
 #: models.py:11
-msgid "translation of"
+msgid "language"
 msgstr ""
 
-#: models.py:15
-msgid "translatable"
+#: templates/admin/includes/ml_links.html:10
+msgid "Save and Add/Edit Translation:"
 msgstr ""
 
-#: models.py:16
-msgid "translatables"
-msgstr ""
-
-#: tests/lang_prefixed_urls.py:8
+#: tests/lang_prefixed_urls.py:14
 msgid "^LANG_CODE/"
 msgstr "^fr/"
 
-#: tests/spangles_urls.py:9
+#: tests/models.py:14
+msgid "publish date/time"
+msgstr ""
+
+#: tests/models.py:15
+msgid "public"
+msgstr ""
+
+#: tests/models.py:18
+msgid "news story"
+msgstr ""
+
+#: tests/models.py:19
+msgid "news stories"
+msgstr ""
+
+#: tests/models.py:36
+msgid "core news story"
+msgstr ""
+
+#: tests/models.py:37
+msgid "headline"
+msgstr ""
+
+#: tests/models.py:38
+msgid "slug"
+msgstr ""
+
+#: tests/models.py:39
+msgid "body"
+msgstr ""
+
+#: tests/models.py:42
+msgid "news story translation"
+msgstr ""
+
+#: tests/models.py:43
+msgid "news story translations"
+msgstr ""
+
+#: tests/settings.py:11
+msgid "English"
+msgstr ""
+
+#: tests/settings.py:12
+msgid "French"
+msgstr ""
+
+#: tests/settings.py:13
+msgid "German"
+msgstr ""
+
+#: tests/spangles_urls.py:10
 msgid "^trans-stripes/"
 msgstr "^trans-bandes/"
 
-#: tests/urls.py:9
+#: tests/urls.py:10
 msgid "^trans-things/$"
 msgstr "^trans-chose/$"
 
-#: tests/urls.py:10
+#: tests/urls.py:11
 msgid "^multi-module-spangles/"
 msgstr "^module-multi-de-spangles/"
+
+#: tests/urls.py:12
+msgid "^news-story/(?P<slug>[-\\w]+)/$"
+msgstr "^nouvelle/(?P<slug>[-\\w]+)/$"
+
+#: tests/templates/multilang_tests/stuff.html:2
+msgid "Blow up the earth? I hope not! It's where I keep all my stuff!"
+msgstr ""

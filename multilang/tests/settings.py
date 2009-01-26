@@ -20,9 +20,19 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
+    'multilang.middleware.MultilangMiddleware',
 )
 
 ROOT_URLCONF = 'multilang.tests.lang_prefixed_urls'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.request',
+    'multilang.context_processors.translate',
+)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
