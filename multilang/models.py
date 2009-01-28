@@ -61,7 +61,7 @@ class LangTranslatable(LangSpecific):
             if self.core_id is None:
                 core_obj = self._meta.get_field_by_name('core')[0].rel.to()
                 core_obj.save()
-                
+
                 self.core = core_obj
         except AttributeError:
             raise ImproperlyConfigured(_('save expects subclasses of '
@@ -69,9 +69,9 @@ class LangTranslatable(LangSpecific):
                     'points to an object that instantiates some subclass of '
                     'LangAgnostic.'))
         except ValidationError, e:
-            raise ImproperlyConfigured(_('save could not auto-create the core '
+            raise ValidationError(_('save could not auto-create the core '
                     'object. If it has required fields you will need to '
-                    'explicitly create it before you can define any translations.'))
+                    'explicitly create it before you can define any translations. Error: %s') % e)
 
         super(LangTranslatable, self).save()
 
