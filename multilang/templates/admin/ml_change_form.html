@@ -1,6 +1,6 @@
 {% extends "admin/change_form.html" %}
 
-{% block bodyclass %}{{ block.super }} {% if not trans_core %}trans-admin{% endif %}{% endblock %}
+{% block bodyclass %}{{ block.super }}{% if not trans_core %} trans-hide-core{% if trans_hide_lang %} trans-hide-lang{% endif %}{% endif %}{% endblock %}
 
 {% block form_top %}
 {% include "admin/includes/ml_links.html" %}

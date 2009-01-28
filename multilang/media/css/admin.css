@@ -65,22 +65,25 @@ ul.trans-tabs li.active a:hover {
     color: #000;
 }
 
-body.trans-admin .submit-row input {
+body.trans-hide-core .submit-row input {
     display: none;
 }
 
-body.trans-admin .submit-row input.add-trans {
+body.trans-hide-core .submit-row input.add-trans {
     display: inline;
 }
 
-body.trans-admin .submit-row p.deletelink-box {
+body.trans-hide-core .submit-row p.deletelink-box {
     float: none;
     margin-bottom: 0px;
     margin-top: 0px;
 }
 
-body.trans-admin div.language,
-body.trans-admin div.core {
+body.trans-hide-core div.core {
+    display: none;
+}
+
+body.trans-hide-lang div.language {
     display: none;
 }
 

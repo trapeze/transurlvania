@@ -66,12 +66,13 @@ class MultiLangModelAdmin(admin.ModelAdmin):
     def _construct_trans_links(self, obj):
         trans_links = []
         
-        trans_links.append({
-            "name": obj,
-            "url": self._construct_core_url(obj),
-            "obj": obj,
-            "code": "",
-        })
+        if len(obj._meta._fields()) > 1:
+            trans_links.append({
+                "name": obj,
+                "url": self._construct_core_url(obj),
+                "obj": obj,
+                "code": "",
+            })
         
         for lang, lang_name in dict(settings.LANGUAGES).iteritems():
             url, trans_obj = self._construct_trans_url(lang, obj)
@@ -126,7 +127,7 @@ class LangTranslatableModelAdmin(MultiLangModelAdmin):
 
             lang = request.POST.get("_addtrans_lang", settings.LANGUAGES[0][0])
 
-            return HttpResponseRedirect(self._construct_trans_url(lang, obj.__getattribute__(self.ml_core_field_name))[0])
+            return HttpResponseRedirect(self._construct_trans_url(lang, getattr(obj, self.ml_core_field_name))[0])
         else:
             return super(LangTranslatableModelAdmin, self).response_add(request, obj, post_url_continue)
 
@@ -140,7 +141,7 @@ class LangTranslatableModelAdmin(MultiLangModelAdmin):
 
             lang = request.POST.get("_addtrans_lang", settings.LANGUAGES[0][0])
 
-            return HttpResponseRedirect(self._construct_trans_url(lang, obj.__getattribute__(self.ml_core_field_name))[0])
+            return HttpResponseRedirect(self._construct_trans_url(lang, getattr(obj, self.ml_core_field_name))[0])
         else:
             return super(LangTranslatableModelAdmin, self).response_change(request, obj)
 
@@ -161,6 +162,7 @@ class LangTranslatableModelAdmin(MultiLangModelAdmin):
             "trans_links": trans_links,
             "trans_langs": settings.LANGUAGES,
             "trans_active_lang": request.GET.get(self.ml_lang_field_name, None),
+            "trans_hide_lang": request.GET.has_key(self.ml_lang_field_name),
             "trans_core": False,
         }
 
@@ -179,13 +181,14 @@ class LangTranslatableModelAdmin(MultiLangModelAdmin):
         trans_active_lang = None
 
         if obj:
-            trans_links.extend(self._construct_trans_links(obj.__getattribute__(self.ml_core_field_name)))
-            trans_active_lang = obj.__getattribute__(self.ml_lang_field_name)
+            trans_links.extend(self._construct_trans_links(getattr(obj, self.ml_core_field_name)))
+            trans_active_lang = getattr(obj, self.ml_lang_field_name)
 
         context = {
             "trans_links": trans_links,
             "trans_langs": settings.LANGUAGES,
             "trans_active_lang": trans_active_lang,
+            "trans_hide_lang": True,
             "trans_core": False,
         }
 
