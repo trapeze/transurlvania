@@ -6,9 +6,10 @@ from multilang.choices import LANGUAGES_CHOICES
 
 
 class LangSpecific(models.Model):
-    """An abstract model that provides the language field"""
-
-    language = models.CharField(_('language'), blank=True, max_length=5, choices=LANGUAGES_CHOICES)
+    """
+    An abstract model that provides the language field
+    """
+    language = models.CharField(_('language'), max_length=5, choices=LANGUAGES_CHOICES)
 
     class Meta:
         abstract = True
@@ -21,7 +22,9 @@ class LangManager(models.Manager):
 
 
 class LangAgnostic(models.Model):
-    """The language agnostic half of the two-model multilang pair"""
+    """
+    The language agnostic half of the two-model multilang pair
+    """
     class Meta:
         abstract = True
 
@@ -37,12 +40,14 @@ class LangAgnostic(models.Model):
                 trans_obj = self.translations.all()[0]
             except IndexError:
                 return None
+
         return getattr(trans_obj, field)
 
 
 class LangTranslatable(LangSpecific):
-    """The language dependent half of the two-model multilang pair"""
-
+    """
+    The language dependent half of the two-model multilang pair
+    """
     objects = LangManager()
 
     class Meta:
@@ -54,8 +59,10 @@ class LangTranslatable(LangSpecific):
         """
         try:
             if self.core_id is None:
-                self.core = self._meta.get_field_by_name('core')[0].rel.to()
-                self.core.save()
+                core_obj = self._meta.get_field_by_name('core')[0].rel.to()
+                core_obj.save()
+                
+                self.core = core_obj
         except AttributeError:
             raise ImproperlyConfigured(_('save expects subclasses of '
                     'LangTranslatable to have a "core" ForeignKey field that '
@@ -65,6 +72,7 @@ class LangTranslatable(LangSpecific):
             raise ImproperlyConfigured(_('save could not auto-create the core '
                     'object. If it has required fields you will need to '
                     'explicitly create it before you can define any translations.'))
+
         super(LangTranslatable, self).save()
 
     def get_translation(self, lang):
@@ -77,4 +85,3 @@ class LangTranslatable(LangSpecific):
                                  'related_name of "translations".')
         except self.DoesNotExist:
             return self
-
