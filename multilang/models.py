@@ -68,10 +68,8 @@ class LangTranslatable(LangSpecific):
                     'LangTranslatable to have a "core" ForeignKey field that '
                     'points to an object that instantiates some subclass of '
                     'LangAgnostic.'))
-        except ValidationError, e:
-            raise ValidationError(_('save could not auto-create the core '
-                    'object. If it has required fields you will need to '
-                    'explicitly create it before you can define any translations. Error: %s') % e)
+        # TODO: Catch validation errors that result from saving a model entry without
+        # providing data for a required field.
 
         super(LangTranslatable, self).save()
 
