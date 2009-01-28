@@ -173,3 +173,12 @@ class MultiLangAdminTestCase(TestCase):
         response = self.client.get('/admin/tests/newsstory/%s/' % s.pk)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin/ml_change_form.html')
+
+
+class CoreAutosaveTestCase(TestCase):
+    def testCoreCreated(self):
+        ns = NewsStory(language='en', headline='test', slug='test', body='test')
+        ns.save()
+        self.assertTrue(isinstance(ns.core, NewsStoryCore))
+        ns1 = NewsStory.objects.get(pk=ns.pk)
+        self.assertTrue(isinstance(ns.core, NewsStoryCore))
