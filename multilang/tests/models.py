@@ -33,7 +33,7 @@ class NewsStory(LangTranslatable):
     """
     A news story that can be translated into multiple languages
     """
-    core = models.ForeignKey(NewsStoryCore, verbose_name=_('core news story'), related_name='translations')
+    core = models.ForeignKey(NewsStoryCore, null=True, blank=True, verbose_name=_('core news story'), related_name='translations')
     headline = models.CharField(_('headline'), max_length=255)
     slug = models.SlugField(_('slug'))
     body = models.TextField(_('body'))
