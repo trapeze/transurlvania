@@ -1,4 +1,4 @@
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db import models
 from django.utils.translation import get_language, ugettext_lazy as _
 
@@ -40,7 +40,6 @@ class LangAgnostic(models.Model):
         return getattr(trans_obj, field)
 
 
-
 class LangTranslatable(LangSpecific):
     """The language dependent half of the two-model multilang pair"""
 
@@ -48,6 +47,25 @@ class LangTranslatable(LangSpecific):
 
     class Meta:
         abstract = True
+
+    def save(self):
+        """
+        If the core fk isn't set, attempts to create and save a new object for it.
+        """
+        try:
+            if self.core_id is None:
+                self.core = self._meta.get_field_by_name('core')[0].rel.to()
+                self.core.save()
+        except AttributeError:
+            raise ImproperlyConfigured(_('save expects subclasses of '
+                    'LangTranslatable to have a "core" ForeignKey field that '
+                    'points to an object that instantiates some subclass of '
+                    'LangAgnostic.'))
+        except ValidationError, e:
+            raise ImproperlyConfigured(_('save could not auto-create the core '
+                    'object. If it has required fields you will need to '
+                    'explicitly create it before you can define any translations.'))
+        super(LangTranslatable, self).save()
 
     def get_translation(self, lang):
         try:
