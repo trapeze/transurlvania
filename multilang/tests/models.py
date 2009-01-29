@@ -11,7 +11,8 @@ class NewsStoryCore(LangAgnostic):
     """
     The core, language-agnostic part of a news story
     """
-    pub_date = models.DateTimeField(_('publish date/time'), default=datetime.datetime.now)
+    publication_date = models.DateTimeField(_('publish date/time'),
+        default=datetime.datetime.now)
     public = models.BooleanField(_('public'), default=True)
 
     class Meta:
@@ -33,7 +34,9 @@ class NewsStory(LangTranslatable):
     """
     A news story that can be translated into multiple languages
     """
-    core = models.ForeignKey(NewsStoryCore, null=True, blank=True, verbose_name=_('core news story'), related_name='translations')
+#TODO: why are we using null=True?
+    core = models.ForeignKey(NewsStoryCore, null=True, blank=True,
+        verbose_name=_('core news story'), related_name='translations')
     headline = models.CharField(_('headline'), max_length=255)
     slug = models.SlugField(_('slug'))
     body = models.TextField(_('body'))
