@@ -181,4 +181,4 @@ class CoreAutosaveTestCase(TestCase):
         ns.save()
         self.assertTrue(isinstance(ns.core, NewsStoryCore))
         ns1 = NewsStory.objects.get(pk=ns.pk)
-        self.assertTrue(isinstance(ns.core, NewsStoryCore))
+        self.assertTrue(isinstance(ns1.core, NewsStoryCore))
