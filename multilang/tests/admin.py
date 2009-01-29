@@ -11,7 +11,7 @@ class NewsStoryAdmin(LangTranslatableModelAdmin):
 
 
 class NewsStoryCoreAdmin(LangAgnosticModelAdmin):
-    list_display = ('headline', 'pub_date',)
+    list_display = ('headline', 'publication_date',)
 
 
 admin.site.register(NewsStory, NewsStoryAdmin)
