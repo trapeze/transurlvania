@@ -1,0 +1,15 @@
+{% load i18n %}
+
+{% block title %}{{ block.super }} - News Stories{% endblock %}
+
+<br />
+<h1>{% trans "News Stories" %}</h1>
+<br />
+<ul>
+{% for news_story in object_list %}
+<li>
+    <h2><a href="{{ news_story.get_absolute_url }}">{{ news_story.headline }}</a></h2>
+    {{ news_story.body }}
+</li>
+{% endfor %}
+</ul>

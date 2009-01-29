@@ -126,9 +126,22 @@ class LanguageSwitchingTestCase(TestCase):
         self.assertEqual(french_version_url, '/fr/trans-chose/')
 
     def testDefaultObjectBasedSwitching(self):
+        n = NewsStoryCore.objects.create()
+        NewsStory.objects.create(
+            core=n,
+            headline='English test story',
+            slug='english-test-story',
+            language='en',
+        )
+        NewsStory.objects.create(
+            core=n,
+            headline='French test story',
+            slug='histoire-de-test',
+            language='fr',
+        )
         response = self.client.get('/en/news-story/english-test-story/')
         french_version_url = self.french_version_anchor_re.search(response.content).group(1)
-        self.assertEqual(french_version_url, '/fr/nouvelle/histoire-du-test-francais/')
+        self.assertEqual(french_version_url, '/fr/nouvelle/histoire-de-test/')
 
 
 class MultiLangAdminTestCase(TestCase):
