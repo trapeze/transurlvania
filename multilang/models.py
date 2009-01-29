@@ -53,7 +53,7 @@ class LangTranslatable(LangSpecific):
     class Meta:
         abstract = True
 
-    def save(self):
+    def save(self, *args, **kwargs):
         """
         If the core fk isn't set, attempts to create and save a new object for it.
         """
@@ -71,7 +71,7 @@ class LangTranslatable(LangSpecific):
         # TODO: Catch validation errors that result from saving a model entry without
         # providing data for a required field.
 
-        super(LangTranslatable, self).save()
+        super(LangTranslatable, self).save(*args, **kwargs)
 
     def get_translation(self, lang):
         try:
