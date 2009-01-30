@@ -88,6 +88,11 @@ class MultiLangModelAdmin(admin.ModelAdmin):
 
 
     class Media:
+        js = (
+            getattr(settings, "JQUERY_PATH", "multilang/js/jquery.js"),
+            "multilang/js/multilang.js",
+        )
+        
         css = {
             "all": ("multilang/css/admin.css",),
         }
