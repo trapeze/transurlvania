@@ -1,0 +1,32 @@
+[
+    {
+        "pk": 1, 
+        "model": "tests.newsstorycore", 
+        "fields": {
+            "pub_date": "2009-01-26 16:05:05", 
+            "public": true
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "tests.newsstory", 
+        "fields": {
+            "headline": "English Test Story", 
+            "core": 1, 
+            "body": "This is the body of the English test story", 
+            "slug": "english-test-story", 
+            "language": "en"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "tests.newsstory", 
+        "fields": {
+            "headline": "Histoire du Test Fran\u00e7ais", 
+            "core": 1, 
+            "body": "", 
+            "slug": "histoire-du-test-francais", 
+            "language": "fr"
+        }
+    }
+]
