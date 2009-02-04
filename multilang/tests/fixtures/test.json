@@ -3,7 +3,7 @@
         "pk": 1, 
         "model": "tests.newsstorycore", 
         "fields": {
-            "pub_date": "2009-01-26 16:05:05", 
+            "publication_date": "2009-01-26 16:05:05", 
             "public": true
         }
     }, 
