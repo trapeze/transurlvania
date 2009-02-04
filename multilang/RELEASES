@@ -1,3 +1,15 @@
+RELEASE 0.4.1ALPHA
+==================
+
+Tagged release-0.4.1ALPHA on February 4, 2009 by Sam Bull <sbull@trapeze.com>.
+
+Bug Fixes
+---------
+
+* Fixed save method signature in LangTranslatable
+* Fixed core-creation test case logic
+
+
 RELEASE 0.4ALPHA
 ================
 
