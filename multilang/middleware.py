@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core import urlresolvers
 from django.utils import translation
 
 from multilang.translators import URLTranslator, AutodetectScheme
@@ -45,3 +46,20 @@ class BlockLocaleMiddleware(object):
         if lang in self.blocked_langs and (not hasattr(request, 'user') or not request.user.is_staff):
             request.LANGUAGE_CODE = self.default_lang
             translation.activate(self.default_lang)
+
+
+class URLCacheResetMiddleware(object):
+    """
+    Middleware that resets the URL resolver cache after each response.
+
+    Install this as the first middleware in the list so it gets run last as the
+    response goes out. It will clear the URLResolver cache. The cache needs to
+    be cleared between requests because the URLResolver objects in the cache
+    are locked into one language, and the next request might be in a different
+    language.
+    
+    This middleware is required if the project uses translated URLs.
+    """
+    def process_response(self, request, response):
+        urlresolvers.clear_url_caches()
+        return response

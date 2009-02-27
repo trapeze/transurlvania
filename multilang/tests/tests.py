@@ -1,7 +1,7 @@
 import re
 
 from django.contrib.auth.models import User
-from django.core.urlresolvers import get_resolver, reverse
+from django.core.urlresolvers import get_resolver, reverse, clear_url_caches
 from django.test import TestCase, Client
 from django.utils import translation
 
@@ -67,6 +67,8 @@ class TransURLTestCase(TestCase):
     def testTransReverses(self):
         translation.activate('en')
         self.assertEqual(reverse(things, 'multilang.tests.urls'), '/trans-things/')
+        # Simulate URLResolver cache reset between requests
+        clear_url_caches()
         translation.activate('fr')
         self.assertEqual(reverse(things, 'multilang.tests.urls'), '/trans-chose/')
 

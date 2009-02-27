@@ -14,6 +14,7 @@ LANGUAGES = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'multilang.middleware.URLCacheResetMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'multilang.middleware.LangInURLMiddleware',
