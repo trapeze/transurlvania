@@ -1,3 +1,39 @@
+multilang-0.5.0BETA
+====================
+
+Tagged multilang-0.5.0BETA on April 9th, 2009 by Zach Mathew <zmathew@trapeze.com>.
+
+
+New Features
+------------
+* Added option to save this_page_in_lang as a context variable
+
+
+Known issues
+------------
+* None
+
+
+Bugs Fixed
+----------
+* None
+
+
+Upgrade Instructions
+--------------------
+* None
+
+
+Library updates
+---------------
+* None
+
+
+
+***
+
+
+
 multilang-0.4.2FINAL
 ====================
 
