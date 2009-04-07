@@ -16,7 +16,7 @@ Known issues
 
 Bugs Fixed
 ----------
-* Reverse look-ups not translating with nested urlconf modules (via include(...))
+* D001011-39 - Reverse look-ups not translating with nested urlconf modules (via include(...))
 
 
 Upgrade Instructions
