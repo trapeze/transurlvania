@@ -1,3 +1,39 @@
+multilang-0.5.1BETA
+====================
+
+Tagged on April 7th, 2009 by Sam Bull <sbull@trapeze.com>.
+
+
+New Features
+------------
+* None
+
+
+Known issues
+------------
+* None
+
+
+Bugs Fixed
+----------
+* Reverse look-ups not translating with nested urlconf modules (via include(...))
+
+
+Upgrade Instructions
+--------------------
+* None
+
+
+Library updates
+---------------
+* None
+
+
+
+***
+
+
+
 multilang-0.5.0BETA
 ====================
 
