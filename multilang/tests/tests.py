@@ -66,11 +66,11 @@ class TransURLTestCase(TestCase):
 
     def testTransReverses(self):
         translation.activate('en')
-        self.assertEqual(reverse(things, 'multilang.tests.urls'), '/trans-things/')
+        self.assertEqual(reverse(spangles_stripes, 'multilang.tests.urls'), '/multi-module-spangles/trans-stripes/')
         # Simulate URLResolver cache reset between requests
         clear_url_caches()
         translation.activate('fr')
-        self.assertEqual(reverse(things, 'multilang.tests.urls'), '/trans-chose/')
+        self.assertEqual(reverse(spangles_stripes, 'multilang.tests.urls'), '/module-multi-de-spangles/trans-bandes/')
 
 
 class LangInURLTestCase(TestCase):

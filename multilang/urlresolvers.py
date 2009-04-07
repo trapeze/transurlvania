@@ -2,7 +2,7 @@ import re
 
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver, get_callable
 from django.core.urlresolvers import NoReverseMatch
-from django.core.urlresolvers import get_resolver, get_script_prefix
+from django.core.urlresolvers import get_script_prefix
 from django.utils.datastructures import MultiValueDict
 from django.utils.encoding import iri_to_uri, force_unicode
 from django.utils.regex_helper import normalize
@@ -24,40 +24,15 @@ def turl(regex, view, kwargs=None, name=None, prefix=''):
         return MultilangRegexURLPattern(regex, view, kwargs, name)
 
 
-_lang_reverse_dicts = {}
-def get_reverse_dict_for_lang(resolver, lang):
-    if lang not in _lang_reverse_dicts:
-        _lang_reverse_dicts[lang] = _build_reverse_dict_for_lang(resolver, lang)
-    return _lang_reverse_dicts[lang]
-
-
-def _build_reverse_dict_for_lang(resolver, lang):
-    reverse_dict = MultiValueDict()
-    if hasattr(resolver.urlconf_module, 'urlpatterns'):
-        for pattern in reversed(resolver.urlconf_module.urlpatterns):
-            if hasattr(pattern, 'get_regex'):
-                p_pattern = pattern.get_regex(lang).pattern
-            else:
-                p_pattern = pattern.regex.pattern
-            if p_pattern.startswith('^'):
-                p_pattern = p_pattern[1:]
-            if isinstance(pattern, RegexURLResolver):
-                if hasattr(pattern, 'get_regex'):
-                    parent = normalize(pattern.get_regex(lang).pattern)
-                else:
-                    parent = normalize(pattern.regex.pattern)
-                sub_reverse_dict = _build_reverse_dict_for_lang(pattern, lang)
-                for name in sub_reverse_dict:
-                    for matches, pat in sub_reverse_dict.getlist(name):
-                        new_matches = []
-                        for piece, p_args in parent:
-                            new_matches.extend([(piece + suffix, p_args + args) for (suffix, args) in matches])
-                        reverse_dict.appendlist(name, (new_matches, p_pattern + pat))
-            else:
-                bits = normalize(p_pattern)
-                reverse_dict.appendlist(pattern.callback, (bits, p_pattern))
-                reverse_dict.appendlist(pattern.name, (bits, p_pattern))
-    return reverse_dict
+_resolvers = {}
+def get_resolver(urlconf, lang):
+    if urlconf is None:
+        from django.conf import settings
+        urlconf = settings.ROOT_URLCONF
+    key = (urlconf, lang)
+    if key not in _resolvers:
+        _resolvers[key] = MultilangRegexURLResolver(r'^/', urlconf)
+    return _resolvers[key]
 
 
 def reverse_for_language(viewname, lang, urlconf=None, args=None, kwargs=None, prefix=None):
@@ -66,7 +41,7 @@ def reverse_for_language(viewname, lang, urlconf=None, args=None, kwargs=None, p
     kwargs = kwargs or {}
     if prefix is None:
         prefix = get_script_prefix()
-    resolver = get_resolver(urlconf)
+    resolver = get_resolver(urlconf, lang)
 
     if args and kwargs:
         raise ValueError("Don't mix *args and **kwargs in call to reverse()!")
@@ -74,7 +49,10 @@ def reverse_for_language(viewname, lang, urlconf=None, args=None, kwargs=None, p
         lookup_view = get_callable(viewname, True)
     except (ImportError, AttributeError), e:
         raise NoReverseMatch("Error importing '%s': %s." % (lookup_view, e))
-    possibilities = get_reverse_dict_for_lang(resolver, lang).getlist(lookup_view)
+    if hasattr(resolver, 'get_reverse_dict'):
+        possibilities = resolver.get_reverse_dict(lang).getlist(lookup_view)
+    else:
+        possibilities = resolver.reverse_dict.getlist(lookup_view)
     for possibility, pattern in possibilities:
         for result, params in possibility:
             if args:
@@ -124,10 +102,49 @@ class MultilangRegexURLResolver(RegexURLResolver):
         self.urlconf_name = urlconf_name
         self.callback = None
         self.default_kwargs = default_kwargs or {}
-        self._reverse_dict = MultiValueDict()
+        self._lang_reverse_dicts = {}
         self._regex_dict = {}
 
     def get_regex(self, lang=None):
         lang = lang or get_language()
         return self._regex_dict.setdefault(lang, re.compile(translation(lang).ugettext(self._raw_regex), re.UNICODE))
     regex = property(get_regex)
+
+    def _build_reverse_dict_for_lang(self, lang):
+        reverse_dict = MultiValueDict()
+        if hasattr(self.urlconf_module, 'urlpatterns'):
+            for pattern in reversed(self.urlconf_module.urlpatterns):
+                if hasattr(pattern, 'get_regex'):
+                    p_pattern = pattern.get_regex(lang).pattern
+                else:
+                    p_pattern = pattern.regex.pattern
+                if p_pattern.startswith('^'):
+                    p_pattern = p_pattern[1:]
+                if isinstance(pattern, RegexURLResolver):
+                    if hasattr(pattern, 'get_regex'):
+                        parent = normalize(pattern.get_regex(lang).pattern)
+                    else:
+                        parent = normalize(pattern.regex.pattern)
+                    if hasattr(pattern, 'get_reverse_dict'):
+                        sub_reverse_dict = pattern.get_reverse_dict(lang)
+                    else:
+                        sub_reverse_dict = pattern.reverse_dict
+                    for name in sub_reverse_dict:
+                        for matches, pat in sub_reverse_dict.getlist(name):
+                            new_matches = []
+                            for piece, p_args in parent:
+                                new_matches.extend([(piece + suffix, p_args + args) for (suffix, args) in matches])
+                            reverse_dict.appendlist(name, (new_matches, p_pattern + pat))
+                else:
+                    bits = normalize(p_pattern)
+                    reverse_dict.appendlist(pattern.callback, (bits, p_pattern))
+                    reverse_dict.appendlist(pattern.name, (bits, p_pattern))
+        return reverse_dict
+
+    def get_reverse_dict(self, lang=None):
+        if lang is None:
+            lang = get_language()
+        if lang not in self._lang_reverse_dicts:
+            self._lang_reverse_dicts[lang] = self._build_reverse_dict_for_lang(lang)
+        return self._lang_reverse_dicts[lang]
+    reverse_dict = property(get_reverse_dict)
