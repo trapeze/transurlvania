@@ -2,6 +2,8 @@
 
 {% block bodyclass %}{{ block.super }}{% if not trans_core %} trans-hide-core{% if trans_hide_lang %} trans-hide-lang{% endif %}{% endif %}{% endblock %}
 
+{% block breadcrumbs %}{% if not trans_hide_breadcrumbs %}{{ block.super }}{% endif %}{% endblock %}
+
 {% block form_top %}
 {% include "admin/includes/ml_links.html" %}
 {% endblock %}

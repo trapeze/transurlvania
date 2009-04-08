@@ -172,6 +172,7 @@ class LangTranslatableModelAdmin(MultiLangModelAdmin):
             "trans_active_lang": request.GET.get(self.ml_lang_field_name, None),
             "trans_hide_lang": request.GET.has_key(self.ml_lang_field_name),
             "trans_core": False,
+            "trans_hide_breadcrumbs": HIDE_TRANSLATABLE_APPS,
         }
 
         context.update(extra_context or {})
@@ -198,6 +199,7 @@ class LangTranslatableModelAdmin(MultiLangModelAdmin):
             "trans_active_lang": trans_active_lang,
             "trans_hide_lang": True,
             "trans_core": False,
+            "trans_hide_breadcrumbs": HIDE_TRANSLATABLE_APPS,
         }
 
         context.update(extra_context or {})
