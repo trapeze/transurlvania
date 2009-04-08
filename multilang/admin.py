@@ -1,10 +1,13 @@
 from django.conf import settings
 from django.contrib import admin
 from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db.models import FieldDoesNotExist
 from django.http import HttpResponseRedirect
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext as _
+
+from multilang.settings import HIDE_TRANSLATABLE_APPS
 
 
 class MultiLangModelAdmin(admin.ModelAdmin):
@@ -105,7 +108,7 @@ class LangTranslatableModelAdmin(MultiLangModelAdmin):
     """
     def __init__(self, model, admin_site):
         super(LangTranslatableModelAdmin, self).__init__(model, admin_site)
-        
+
         try:
             field = model._meta.get_field_by_name(self.ml_core_field_name)
             
@@ -121,8 +124,8 @@ class LangTranslatableModelAdmin(MultiLangModelAdmin):
                 "field": self.ml_core_field_name,
                 "model": model.__name__,
             })
-    
-    
+
+
     def response_add(self, request, obj, post_url_continue='../%s/'):
         if request.POST.has_key("_addtrans"):
             self.message_user(request, _('The %(name)s "%(obj)s" was added successfully.') % {
@@ -200,6 +203,36 @@ class LangTranslatableModelAdmin(MultiLangModelAdmin):
         context.update(extra_context or {})
 
         return super(LangTranslatableModelAdmin, self).change_view(request, object_id, context)
+
+
+    def has_add_permission(self, request):
+        index_url = reverse("admin", args=[""])
+        app_url = reverse("admin", args=[self.opts.app_label])
+
+        if HIDE_TRANSLATABLE_APPS and (request.path == index_url or request.path == app_url):
+            return False
+        else:
+            return super(LangTranslatableModelAdmin, self).has_add_permission(request)
+
+
+    def has_change_permission(self, request, obj=None):
+        index_url = reverse("admin", args=[""])
+        app_url = reverse("admin", args=[self.opts.app_label])
+
+        if HIDE_TRANSLATABLE_APPS and (request.path == index_url or request.path == app_url):
+            return False
+        else:
+            return super(LangTranslatableModelAdmin, self).has_change_permission(request, obj)
+
+
+    def has_delete_permission(self, request, obj=None):
+        index_url = reverse("admin", args=[""])
+        app_url = reverse("admin", args=[self.opts.app_label])
+
+        if HIDE_TRANSLATABLE_APPS and (request.path == index_url or request.path == app_url):
+            return False
+        else:
+            return super(LangTranslatableModelAdmin, self).has_delete_permission(request, obj)
 
 
 class LangAgnosticModelAdmin(MultiLangModelAdmin):
