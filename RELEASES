@@ -1,3 +1,36 @@
+multilang-0.6.0ALPHA
+====================
+
+Tagged on April 8th, 2009 by Taylan Pince <tpince@trapeze.com>.
+
+
+New Features
+------------
+* Added a custom setting and functionality for hiding translatable admin model
+  links from the main admin index
+
+
+Known issues
+------------
+* None
+
+
+Bugs Fixed
+----------
+* None
+
+
+Upgrade Instructions
+--------------------
+* None
+
+
+Library updates
+---------------
+* None
+
+* * *
+
 multilang-0.5.1BETA
 ====================
 
