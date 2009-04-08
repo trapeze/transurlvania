@@ -87,4 +87,11 @@ media folder as multilang:
 
     ln -s path/to/multilang/media project_name/media/multilang
 
+If you would like to hide translatable model admin links from the main admin
+index page, you can set HIDE_TRANSLATABLE_APPS setting variable to True in
+your settings.py file. If you do this, you have to make sure that your admin
+url configuration is named "admin", as such:
+
+    turl(_(r'^admin/(.*)'), admin.site.root, name='admin'),
+
 See `multilang/tests/admin.py` for an example.
