@@ -207,34 +207,46 @@ class LangTranslatableModelAdmin(MultiLangModelAdmin):
         return super(LangTranslatableModelAdmin, self).change_view(request, object_id, context)
 
 
-    def has_add_permission(self, request):
-        index_url = reverse("admin", args=[""])
-        app_url = reverse("admin", args=[self.opts.app_label])
+    def _check_perms_by_path(self, request, obj=None):
+        try:
+            admin_url = reverse("admin", args=[""])
+        except NoReverseMatch:
+            raise ImproperlyConfigured(_("No admin URL could be found."))
 
-        if HIDE_TRANSLATABLE_APPS and (request.path == index_url or request.path == app_url):
-            return False
-        else:
-            return super(LangTranslatableModelAdmin, self).has_add_permission(request)
+        restricted_urls = [
+            admin_url,
+            "%s%s/" % (admin_url, self.opts.app_label),
+        ]
+
+        for url in restricted_urls:
+            if request.path == url:
+                return True
+
+        return False
+
+
+    def has_add_permission(self, request):
+        if HIDE_TRANSLATABLE_APPS:
+            if self._check_perms_by_path(request):
+                return False
+
+        return super(LangTranslatableModelAdmin, self).has_add_permission(request)
 
 
     def has_change_permission(self, request, obj=None):
-        index_url = reverse("admin", args=[""])
-        app_url = reverse("admin", args=[self.opts.app_label])
+        if HIDE_TRANSLATABLE_APPS:
+            if self._check_perms_by_path(request, obj):
+                return False
 
-        if HIDE_TRANSLATABLE_APPS and (request.path == index_url or request.path == app_url):
-            return False
-        else:
-            return super(LangTranslatableModelAdmin, self).has_change_permission(request, obj)
+        return super(LangTranslatableModelAdmin, self).has_change_permission(request, obj)
 
 
     def has_delete_permission(self, request, obj=None):
-        index_url = reverse("admin", args=[""])
-        app_url = reverse("admin", args=[self.opts.app_label])
+        if HIDE_TRANSLATABLE_APPS:
+            if self._check_perms_by_path(request, obj):
+                return False
 
-        if HIDE_TRANSLATABLE_APPS and (request.path == index_url or request.path == app_url):
-            return False
-        else:
-            return super(LangTranslatableModelAdmin, self).has_delete_permission(request, obj)
+        return super(LangTranslatableModelAdmin, self).has_delete_permission(request, obj)
 
 
 class LangAgnosticModelAdmin(MultiLangModelAdmin):
