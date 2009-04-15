@@ -1,7 +1,9 @@
+#encoding=utf8
 import re
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import get_resolver, reverse, clear_url_caches
+from django.template import Context, Template
 from django.test import TestCase, Client
 from django.utils import translation
 
@@ -184,3 +186,79 @@ class CoreAutosaveTestCase(TestCase):
         self.assertTrue(isinstance(ns.core, NewsStoryCore))
         ns1 = NewsStory.objects.get(pk=ns.pk)
         self.assertTrue(isinstance(ns1.core, NewsStoryCore))
+
+
+class TransInLangTagTestCase(TestCase):
+    """Tests for the `trans_in_lang` template tag."""
+
+    def testBasic(self):
+        """
+        Tests the basic usage of the tag.
+        """
+        translation.activate('en')
+        template_content = '{% load multilang_tags %}{% trans_in_lang "French" "fr" %}'
+        template = Template(template_content)
+        output = template.render(Context())
+        self.assertEquals(output, u'Français')
+
+        translation.activate('fr')
+        template_content = '{% load multilang_tags %}{% trans_in_lang "French" "en" %}'
+        template = Template(template_content)
+        output = template.render(Context())
+        self.assertEquals(output, u'French')
+
+    def testAsKeyword(self):
+        """
+        Tests the tag when using the `as` keyword.
+        """
+        translation.activate('en')
+        template_content = '{% load multilang_tags %}{% trans_in_lang "French" "fr" as myvar %}{{ myvar }}'
+        template = Template(template_content)
+        output = template.render(Context())
+        self.assertEquals(output, u'Français')
+
+    def testVariableArguments(self):
+        """
+        Tests the tag when using a variables as the arguments.
+        """
+        translation.activate('en')
+        template_content = '{% load multilang_tags %}{% with "French" as myvar %}{% with "fr" as lang %}{% trans_in_lang myvar lang %}{% endwith %}{% endwith %}'
+        template = Template(template_content)
+        output = template.render(Context())
+        self.assertEquals(output, u'Français')
+
+    def testKeepsPresetLanguage(self):
+        """
+        Tests that the tag does not change the language.
+        """
+        translation.activate('en')
+        template_content = '{% load i18n %}{% load multilang_tags %}{% trans_in_lang "French" "fr" %}|{% trans "French" %}'
+        template = Template(template_content)
+        output = template.render(Context())
+        self.assertEquals(output, u'Français|French')
+
+        translation.activate('fr')
+        template_content = '{% load i18n %}{% load multilang_tags %}{% trans_in_lang "French" "en" %}|{% trans "French" %}'
+        template = Template(template_content)
+        output = template.render(Context())
+        self.assertEquals(output, u'French|Français')
+
+    def testNoTranslation(self):
+        """
+        Tests the tag when there is no translation for the given string.
+        """
+        translation.activate('en')
+        template_content = '{% load multilang_tags %}{% trans_in_lang "somethinginvalid" "fr" %}'
+        template = Template(template_content)
+        output = template.render(Context())
+        self.assertEquals(output, u'somethinginvalid')
+
+    def testRepeated(self):
+        """
+        Tests the tag when it is used repeatedly for different languages.
+        """
+        translation.activate('en')
+        template_content = '{% load multilang_tags %}{% trans_in_lang "French" "en" %}|{% trans_in_lang "French" "fr" %}|{% trans_in_lang "French" "de" %}'
+        template = Template(template_content)
+        output = template.render(Context())
+        self.assertEquals(output, u'French|Français|Französisch')
