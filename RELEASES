@@ -1,3 +1,32 @@
+multilang-UNRELEASED
+====================
+
+Tagged on <date> by <whom> <<email>>
+
+
+New Features
+------------
+* Added `trans_in_lang` template tag
+
+
+Known issues
+------------
+* None
+
+
+Bugs Fixed
+----------
+* None
+
+
+Upgrade Instructions
+--------------------
+* None
+
+
+***
+
+
 multilang-0.6.0RC
 =================
 
