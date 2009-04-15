@@ -1,12 +1,12 @@
-multilang-UNRELEASED
-====================
+multilang-0.7.0RC
+=================
 
-Tagged on <date> by <whom> <<email>>
+Tagged on April 15th, 2009 by Zach Mathew <zmathew@trapeze.com>
 
 
 New Features
 ------------
-* Added `trans_in_lang` template tag
+* Added `trans_in_lang` template filter
 
 
 Known issues
@@ -16,7 +16,7 @@ Known issues
 
 Bugs Fixed
 ----------
-* None
+* D001011-115: Changed trans_in_lang tag to a template filter
 
 
 Upgrade Instructions
@@ -24,7 +24,7 @@ Upgrade Instructions
 * None
 
 
-***
+* * *
 
 
 multilang-0.6.0RC
@@ -289,7 +289,7 @@ New Features
 
 * Added core object creation functionality to the save method in
   LangTranslatable.
-  
+
 * Updated MultiLangAdmin classes to provide an alternative flow when a core
   class doesn't have any attributes specified.
 
