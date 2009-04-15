@@ -196,33 +196,23 @@ class TransInLangTagTestCase(TestCase):
         Tests the basic usage of the tag.
         """
         translation.activate('en')
-        template_content = '{% load multilang_tags %}{% trans_in_lang "French" "fr" %}'
+        template_content = '{% load multilang_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"fr" }}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'Français')
 
         translation.activate('fr')
-        template_content = '{% load multilang_tags %}{% trans_in_lang "French" "en" %}'
+        template_content = '{% load multilang_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"en" }}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'French')
 
-    def testAsKeyword(self):
+    def testVariableArgument(self):
         """
-        Tests the tag when using the `as` keyword.
-        """
-        translation.activate('en')
-        template_content = '{% load multilang_tags %}{% trans_in_lang "French" "fr" as myvar %}{{ myvar }}'
-        template = Template(template_content)
-        output = template.render(Context())
-        self.assertEquals(output, u'Français')
-
-    def testVariableArguments(self):
-        """
-        Tests the tag when using a variables as the arguments.
+        Tests the tag when using a variable as the lang argument.
         """
         translation.activate('en')
-        template_content = '{% load multilang_tags %}{% with "French" as myvar %}{% with "fr" as lang %}{% trans_in_lang myvar lang %}{% endwith %}{% endwith %}'
+        template_content = '{% load multilang_tags %}{% with "French" as myvar %}{% with "fr" as lang %}{{ myvar|trans_in_lang:lang }}{% endwith %}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'Français')
@@ -232,13 +222,13 @@ class TransInLangTagTestCase(TestCase):
         Tests that the tag does not change the language.
         """
         translation.activate('en')
-        template_content = '{% load i18n %}{% load multilang_tags %}{% trans_in_lang "French" "fr" %}|{% trans "French" %}'
+        template_content = '{% load i18n %}{% load multilang_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"fr" }}|{% trans "French" %}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'Français|French')
 
         translation.activate('fr')
-        template_content = '{% load i18n %}{% load multilang_tags %}{% trans_in_lang "French" "en" %}|{% trans "French" %}'
+        template_content = '{% load i18n %}{% load multilang_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"en" }}|{% trans "French" %}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'French|Français')
@@ -248,7 +238,7 @@ class TransInLangTagTestCase(TestCase):
         Tests the tag when there is no translation for the given string.
         """
         translation.activate('en')
-        template_content = '{% load multilang_tags %}{% trans_in_lang "somethinginvalid" "fr" %}'
+        template_content = '{% load multilang_tags %}{% with "somethinginvalid" as myvar %}{{ myvar|trans_in_lang:"fr" }}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'somethinginvalid')
@@ -258,7 +248,7 @@ class TransInLangTagTestCase(TestCase):
         Tests the tag when it is used repeatedly for different languages.
         """
         translation.activate('en')
-        template_content = '{% load multilang_tags %}{% trans_in_lang "French" "en" %}|{% trans_in_lang "French" "fr" %}|{% trans_in_lang "French" "de" %}'
+        template_content = '{% load multilang_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"en" }}|{{ myvar|trans_in_lang:"fr" }}|{{ myvar|trans_in_lang:"de" }}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'French|Français|Französisch')

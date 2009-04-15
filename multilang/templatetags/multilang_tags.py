@@ -1,5 +1,8 @@
 from django import template
-from django.utils import translation
+from django.template.defaultfilters import stringfilter
+
+from django.utils.translation import check_for_language
+from django.utils.translation.trans_real import translation
 
 from multilang.translators import NoTranslationError
 
@@ -86,52 +89,18 @@ class ThisPageInLangNode(template.Node):
             return output
 
 
-@register.tag
-def trans_in_lang(parser, token):
+@register.filter
+@stringfilter
+def trans_in_lang(string, lang):
     """
-    Translate a string in a specific language (which can be different
+    Translate a string into a specific language (which can be different
     than the set language).
 
     Usage:
 
-        {% trans_in_lang "some word" "fr" %}
-        {% trans_in_lang "some word" "fr" as var_name %}
+        {{ var|trans_in_lang:"fr" %}
 
     """
-    bits = token_splitter(token, unquote=True)
-    if len(bits['args']) != 2:
-        raise template.TemplateSyntaxError, "%s tag requires two arguments" % tag_name
-
-    return TransInLangNode(bits['args'][0], bits['args'][1],
-        bits['context_var']
-    )
-
-
-class TransInLangNode(template.Node):
-    def __init__(self, string, lang, context_var=None):
-        self.string = string
-        self.lang = lang
-        self.context_var = context_var
-
-    def render(self, context):
-        try:
-            string = template.Variable(self.string).resolve(context)
-        except template.VariableDoesNotExist:
-            string = self.string
-        try:
-            lang = template.Variable(self.lang).resolve(context)
-        except template.VariableDoesNotExist:
-            lang = self.lang
-
-        output = string
-        if translation.check_for_language(lang):
-            current_lang = translation.get_language()
-            translation.activate(lang)
-            output = translation.ugettext(string)
-            translation.activate(current_lang)
-
-        if self.context_var:
-            context[self.context_var] = output
-            return ''
-        else:
-            return output
+    if check_for_language(lang):
+        return translation(lang).ugettext(string)
+    return string
