@@ -8,6 +8,14 @@
         }
     }, 
     {
+        "pk": 2, 
+        "model": "tests.newsstorycore", 
+        "fields": {
+            "publication_date": "2009-03-26 16:05:05", 
+            "public": true
+        }
+    }, 
+    {
         "pk": 1, 
         "model": "tests.newsstory", 
         "fields": {
@@ -27,6 +35,17 @@
             "body": "", 
             "slug": "histoire-du-test-francais", 
             "language": "fr"
+        }
+    },
+    {
+        "pk": 3, 
+        "model": "tests.newsstory", 
+        "fields": {
+            "headline": "A story without a translatin", 
+            "core": 2, 
+            "body": "This is the body of the English-only test story", 
+            "slug": "story-without-translation", 
+            "language": "en"
         }
     }
 ]

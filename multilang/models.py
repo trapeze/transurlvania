@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import get_language, ugettext_lazy as _
 
 from multilang.choices import LANGUAGES_CHOICES
+from multilang.translators import NoTranslationError
 
 
 class LangSpecific(models.Model):
@@ -82,4 +83,4 @@ class LangTranslatable(LangSpecific):
                                  'points to the LangAgnostic object, with a '
                                  'related_name of "translations".')
         except self.DoesNotExist:
-            return self
+            raise NoTranslationError('No translation in language %s' % lang)

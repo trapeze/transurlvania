@@ -10,6 +10,7 @@ from django.utils import translation
 from multilang.tests.models import NewsStory, NewsStoryCore
 from multilang.tests.views import home, stuff, things, spangles_stars, spangles_stripes
 from multilang.tests.views import multilang_home
+from multilang.translators import NoTranslationError
 
 
 class TransURLTestCase(TestCase):
@@ -252,3 +253,25 @@ class TransInLangTagTestCase(TestCase):
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'French|Français|Französisch')
+
+
+class MultilangModelTestCase(TestCase):
+    """
+    Test the internal translatable model functionality
+    """
+    fixtures = ['test.json']
+
+    def testTranslationIsProvidedWhenAvailable(self):
+        # Get English news story core that has English and French translations
+        ns_core = NewsStoryCore.objects.get(pk=1)
+        ns_en = ns_core.translations.get(language='en')
+        ns_fr = ns_core.translations.get(language='fr')
+
+        self.assertEqual(ns_en.get_translation('fr'), ns_fr)
+
+    def testRaisesErrorWhenTranslationUnavailable(self):
+        # Get English news story core that only has an English translation
+        ns_core = NewsStoryCore.objects.get(pk=2)
+        ns_en = ns_core.translations.get(language='en')
+
+        self.assertRaises(NoTranslationError, ns_en.get_translation, 'fr')
