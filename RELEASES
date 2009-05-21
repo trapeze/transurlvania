@@ -1,3 +1,28 @@
+multilang-0.7.1FINAL
+====================
+
+Tagged on May 21, 2009 by Sam Bull <sbull@trapeze.com>
+
+Identical to multilang-0.7.1RC
+
+New Features
+------------
+None
+
+Known issues
+------------
+* D001011-139 - README isn't friendly to non-devs
+
+Bugs Fixed
+----------
+None
+
+Upgrade Instructions
+--------------------
+None
+
+***
+
 multilang-0.7.1RC
 =================
 
