@@ -9,6 +9,8 @@ from django.utils.regex_helper import normalize
 from django.utils.translation import get_language
 from django.utils.translation.trans_real import translation
 
+from multilang.settings import LANGUAGE_DOMAINS
+
 
 def turl(regex, view, kwargs=None, name=None, prefix=''):
     # Copied from django.conf.urls.defaults.url
@@ -66,7 +68,12 @@ def reverse_for_language(viewname, lang, urlconf=None, args=None, kwargs=None, p
                 unicode_kwargs = dict([(k, force_unicode(v)) for (k, v) in kwargs.items()])
                 candidate = result % unicode_kwargs
             if re.search(u'^%s' % pattern, candidate, re.UNICODE):
-                return iri_to_uri(u'%s%s' % (prefix, candidate))
+                iri = u'%s%s' % (prefix, candidate)
+                # If we have a separate domain for lang, put that in the iri
+                domain = LANGUAGE_DOMAINS.get(lang, None)
+                if domain:
+                    iri = u'http://%s%s' % (domain[0], iri)
+                return iri_to_uri(iri)
     raise NoReverseMatch("Reverse for '%s' with arguments '%s' and keyword "
             "arguments '%s' not found." % (lookup_view, args, kwargs))
 

@@ -48,4 +48,3 @@ INSTALLED_APPS = (
 TEMPLATE_DIRS = (
     os.path.join(os.path.realpath(os.path.dirname(__file__)), 'templates/'),
 )
-

@@ -7,10 +7,13 @@ from django.template import Context, Template
 from django.test import TestCase, Client
 from django.utils import translation
 
+from multilang import urlresolvers as multilang_resolvers
+from multilang.tests import settings as test_settings
 from multilang.tests.models import NewsStory, NewsStoryCore
 from multilang.tests.views import home, stuff, things, spangles_stars, spangles_stripes
 from multilang.tests.views import multilang_home
 from multilang.translators import NoTranslationError
+from multilang.urlresolvers import reverse_for_language
 
 
 class TransURLTestCase(TestCase):
@@ -76,6 +79,103 @@ class TransURLTestCase(TestCase):
         self.assertEqual(reverse(spangles_stripes, 'multilang.tests.urls'), '/module-multi-de-spangles/trans-bandes/')
 
 
+class ReverseForLanguageTestCase(TestCase):
+    """
+    Test the `reverse_for_language` functionality.
+    These tests require that English (en) and French (fr) are both listed in
+    the LANGUAGES list in settings.
+    """
+    def setUp(self):
+        self.resolver = get_resolver('multilang.tests.urls')
+
+    def tearDown(self):
+        translation.deactivate()
+        test_settings.LANGUAGE_DOMAINS = {}
+        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
+
+    def testSameDomain(self):
+        test_settings.LANGUAGE_DOMAINS = {}
+        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
+
+        translation.activate('en')
+        self.assertEquals(
+            reverse_for_language(spangles_stripes, 'en', 'multilang.tests.urls'),
+            '/multi-module-spangles/trans-stripes/'
+        )
+        self.assertEquals(
+            reverse_for_language(spangles_stripes, 'fr', 'multilang.tests.urls'),
+            '/module-multi-de-spangles/trans-bandes/'
+        )
+
+        translation.activate('fr')
+        self.assertEquals(
+            reverse_for_language(spangles_stripes, 'fr', 'multilang.tests.urls'),
+            '/module-multi-de-spangles/trans-bandes/'
+        )
+        self.assertEquals(
+            reverse_for_language(spangles_stripes, 'en', 'multilang.tests.urls'),
+            '/multi-module-spangles/trans-stripes/'
+        )
+
+    def testOneDifferentDomain(self):
+        test_settings.LANGUAGE_DOMAINS = {
+            'fr': ('www.trapeze-fr.com', 'French Site')
+        }
+        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
+
+        fr_domain = test_settings.LANGUAGE_DOMAINS['fr'][0]
+
+        translation.activate('en')
+        self.assertEquals(
+            reverse_for_language(spangles_stripes, 'en', 'multilang.tests.urls'),
+            '/multi-module-spangles/trans-stripes/'
+        )
+        self.assertEquals(
+            reverse_for_language(spangles_stripes, 'fr', 'multilang.tests.urls'),
+            'http://%s/module-multi-de-spangles/trans-bandes/' % fr_domain
+        )
+
+        translation.activate('fr')
+        self.assertEquals(
+            reverse_for_language(spangles_stripes, 'fr', 'multilang.tests.urls'),
+            'http://%s/module-multi-de-spangles/trans-bandes/' % fr_domain
+        )
+        self.assertEquals(
+            reverse_for_language(spangles_stripes, 'en', 'multilang.tests.urls'),
+            '/multi-module-spangles/trans-stripes/'
+        )
+
+    def testBothDifferentDomains(self):
+        test_settings.LANGUAGE_DOMAINS = {
+            'en': ('www.trapeze.com', 'English Site'),
+            'fr': ('www.trapeze-fr.com', 'French Site')
+        }
+        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
+
+        en_domain = test_settings.LANGUAGE_DOMAINS['en'][0]
+        fr_domain = test_settings.LANGUAGE_DOMAINS['fr'][0]
+
+        translation.activate('en')
+        self.assertEquals(
+            reverse_for_language(spangles_stripes, 'en', 'multilang.tests.urls'),
+            'http://%s/multi-module-spangles/trans-stripes/' % en_domain
+        )
+        self.assertEquals(
+            reverse_for_language(spangles_stripes, 'fr', 'multilang.tests.urls'),
+            'http://%s/module-multi-de-spangles/trans-bandes/' % fr_domain
+        )
+
+        translation.activate('fr')
+        self.assertEquals(
+            reverse_for_language(spangles_stripes, 'fr', 'multilang.tests.urls'),
+            'http://%s/module-multi-de-spangles/trans-bandes/' % fr_domain
+        )
+        self.assertEquals(
+            reverse_for_language(spangles_stripes, 'en', 'multilang.tests.urls'),
+            'http://%s/multi-module-spangles/trans-stripes/' % en_domain
+        )
+
+
 class LangInURLTestCase(TestCase):
     """
     Test language setting via URL path
@@ -119,11 +219,17 @@ class LangInURLTestCase(TestCase):
 class LanguageSwitchingTestCase(TestCase):
     fixtures = ['test.json']
     """
-    Test the language switching functionality of multilang.
+    Test the language switching functionality of multilang (which also tests
+    the `this_page_in_lang` template tag).
     """
     def setUp(self):
         self.client = Client()
         self.french_version_anchor_re = re.compile(r'<a class="french-version-link" href="([^"]*)">')
+
+    def tearDown(self):
+        translation.deactivate()
+        test_settings.LANGUAGE_DOMAINS = {}
+        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
 
     def testDefaultViewBasedSwitching(self):
         response = self.client.get('/en/trans-things/')
@@ -134,6 +240,30 @@ class LanguageSwitchingTestCase(TestCase):
         response = self.client.get('/en/news-story/english-test-story/')
         french_version_url = self.french_version_anchor_re.search(response.content).group(1)
         self.assertEqual(french_version_url, '/fr/nouvelle/histoire-du-test-francais/')
+
+    def testDefaultViewBasedSwitchingWithSeparateDomains(self):
+        test_settings.LANGUAGE_DOMAINS = {
+            'fr': ('www.trapeze-fr.com', 'French Site')
+        }
+        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
+
+        response = self.client.get('/en/trans-things/')
+        french_version_url = self.french_version_anchor_re.search(response.content).group(1)
+        self.assertEqual(french_version_url,
+            'http://www.trapeze-fr.com/fr/trans-chose/'
+        )
+
+    def testDefaultObjectBasedSwitchingWithSeparateDomains(self):
+        test_settings.LANGUAGE_DOMAINS = {
+            'fr': ('www.trapeze-fr.com', 'French Site')
+        }
+        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
+
+        response = self.client.get('/en/news-story/english-test-story/')
+        french_version_url = self.french_version_anchor_re.search(response.content).group(1)
+        self.assertEqual(french_version_url,
+            'http://www.trapeze-fr.com/fr/nouvelle/histoire-du-test-francais/'
+        )
 
 
 class MultiLangAdminTestCase(TestCase):
@@ -191,6 +321,9 @@ class CoreAutosaveTestCase(TestCase):
 
 class TransInLangTagTestCase(TestCase):
     """Tests for the `trans_in_lang` template tag."""
+
+    def tearDown(self):
+        translation.deactivate()
 
     def testBasic(self):
         """
