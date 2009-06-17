@@ -479,3 +479,13 @@ def CompleteURLTestCase(TestCase):
     def testNoDomain(self):
         translation.activate('de')
         self.assertRaises(ImproperlyConfigured, complete_url, '/path/')
+
+    def testExplicitLang(self):
+        translation.activate('en')
+        self.assertEquals(complete_url('/path/', 'fr'),
+            'http://www.trapeze-fr.com/path/'
+        )
+        translation.activate('en')
+        self.assertEquals(complete_url('/path/', 'en'),
+            'http://www.trapeze-en.com/path/'
+        )

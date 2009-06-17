@@ -4,6 +4,7 @@ Multilang Documentation
 Multilang is a suite of tools to help in the building of a multi-lingual
 Django project. It contains several components:
 
+
 Translatable URLs
 -----------------
 
@@ -22,19 +23,26 @@ return a list or tuple with this pattern:
 `language_of_object` should be the language code of the object, so if the
 model uses multilang's translatable DB solution, it would be `self.language`.
 
-Language Setting Via URL
-------------------------
+
+Language Setting Via URL or Domain
+----------------------------------
 
 Use LangInPathMiddleware and special root URLconf to embed the language code
 in the URL path.
 
-This supersedes Django's usual language detection, so any URL with a language
-code in it has a predictable language when visited. This also means that the
-individual, language-specific resources of the site can all be identified
-by URL.
+Use LangInDomainMiddleware and the `MULTILANG_LANGUAGE_DOMAINS` setting
+to have language determination based on the domain name.*
+
+This supersedes Django's usual language detection, so any language specific url
+has a predictable language when visited. This also means that the individual,
+language-specific resources of the site can all be identified by URL.
 
 See `multilang/tests/settings.py` and `multilang/tests/lang_prefixed_urls.py`
 for an example.
+
+*Use the `multilang.utils.complete_url` utility function to build full urls
+(ie. with the domain)
+
 
 Translatable DB
 ---------------
@@ -47,6 +55,7 @@ LangAgnostic model even if you have no "language agnostic" fields to put
 in it, since it is used for finding translations.
 
 See `multilang/tests/models.py` for an example.
+
 
 Translation Switching
 ---------------------
@@ -68,11 +77,13 @@ of the available translations of the current page.
 TODO: Should there be a way for translations to "fall back" to other locations
 on the site if a page-specific translation can't be found?
 
+
 Language Hiding
 ---------------
 
 The BlockLocaleMiddleware will block non-admins from accessing the site in any language
 listed in the `BLOCKED_LANGUAGES` setting in the settings file.
+
 
 Admin
 -----

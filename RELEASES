@@ -1,13 +1,15 @@
-multilang-UNRELEASED
+multilang-0.8.0ALPHA
 ====================
 
-Tagged on <date>, 2009 by <name> <<email>>
+Tagged on June 17, 2009 by Zach Mathew <zmathew@trapeze.com>
 
 
 New Features
 ------------
 * Added support for separate domains for each language.
+* Added utility method `complete_url`
 * Renamed LangInURLMiddleware to LangInPathMiddleware
+
 
 Known issues
 ------------
