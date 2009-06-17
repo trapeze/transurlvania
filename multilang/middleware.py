@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core import urlresolvers
 from django.utils import translation
 
+from multilang.settings import LANGUAGE_DOMAINS
 from multilang.translators import URLTranslator, AutodetectScheme
 
 
@@ -19,6 +20,21 @@ class LangInPathMiddleware(object):
         if potential_lang_code in self.lang_codes:
             translation.activate(potential_lang_code)
             request.LANGUAGE_CODE = translation.get_language()
+
+
+class LangInDomainMiddleware(object):
+    """
+    Middleware for determining site's language via the domain name used in
+    the request.
+    This needs to be installed after the LocaleMiddleware so it can override
+    that middleware's decisions.
+    """
+
+    def process_request(self, request):
+        for lang in LANGUAGE_DOMAINS.keys():
+            if LANGUAGE_DOMAINS[lang][0] == request.META['SERVER_NAME']:
+                translation.activate(lang)
+                request.LANGUAGE_CODE = translation.get_language()
 
 
 class MultilangMiddleware(object):

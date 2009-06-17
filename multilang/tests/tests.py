@@ -2,6 +2,7 @@
 import re
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import get_resolver, reverse, clear_url_caches
 from django.template import Context, Template
 from django.test import TestCase, Client
@@ -14,6 +15,7 @@ from multilang.tests.views import home, stuff, things, spangles_stars, spangles_
 from multilang.tests.views import multilang_home
 from multilang.translators import NoTranslationError
 from multilang.urlresolvers import reverse_for_language
+from multilang.utils import complete_url
 
 
 class TransURLTestCase(TestCase):
@@ -216,6 +218,44 @@ class LangInPathTestCase(TestCase):
         self.assertEqual(response.context.get('LANGUAGE_CODE', None), 'fr')
 
 
+class LangInDomainTestCase(TestCase):
+    """
+    Test language setting via URL path
+    LangInDomainMiddleware must be listed in MIDDLEWARE_CLASSES for these tests
+    to run properly.
+    """
+    def tearDown(self):
+        translation.deactivate()
+
+    def testRootURL(self):
+        translation.activate('en')
+        client = Client(SERVER_NAME='www.trapeze-fr.com')
+        response = client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context.get('LANGUAGE_CODE'), 'fr')
+
+        translation.activate('fr')
+        self.client = Client(SERVER_NAME='www.trapeze-en.com')
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context.get('LANGUAGE_CODE'), 'en')
+
+    def testURLWithPrefixes(self):
+        translation.activate('en')
+        client = Client(SERVER_NAME='www.trapeze-fr.com')
+        response = client.get('/en/non-trans-stuff/')
+        self.assertEqual(response.status_code, 404)
+        response = client.get('/fr/non-trans-stuff/')
+        self.assertEqual(response.context.get('LANGUAGE_CODE'), 'fr')
+
+        translation.activate('fr')
+        client = Client(SERVER_NAME='www.trapeze-en.com')
+        response = client.get('/fr/non-trans-stuff/')
+        self.assertEqual(response.status_code, 404)
+        response = client.get('/en/non-trans-stuff/')
+        self.assertEqual(response.context.get('LANGUAGE_CODE'), 'en')
+
+
 class LanguageSwitchingTestCase(TestCase):
     fixtures = ['test.json']
     """
@@ -237,6 +277,9 @@ class LanguageSwitchingTestCase(TestCase):
         self.assertEqual(french_version_url, '/fr/trans-chose/')
 
     def testDefaultObjectBasedSwitching(self):
+        test_settings.LANGUAGE_DOMAINS = {}
+        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
+
         response = self.client.get('/en/news-story/english-test-story/')
         french_version_url = self.french_version_anchor_re.search(response.content).group(1)
         self.assertEqual(french_version_url, '/fr/nouvelle/histoire-du-test-francais/')
@@ -408,3 +451,31 @@ class MultilangModelTestCase(TestCase):
         ns_en = ns_core.translations.get(language='en')
 
         self.assertRaises(NoTranslationError, ns_en.get_translation, 'fr')
+
+
+def CompleteURLTestCase(TestCase):
+    """
+    Tests the `complete_url` utility function.
+    """
+    def tearDown(self):
+        translation.deactivate()
+
+    def testPath(self):
+        translation.activate('en')
+        self.assertEquals(complete_url('/path/'),
+            'http://www.trapeze-en.com/path/'
+        )
+        translation.activate('fr')
+        self.assertEquals(complete_url('/path/'),
+            'http://www.trapeze-fr.com/path/'
+        )
+
+    def testFullUrl(self):
+        translation.activate('fr')
+        self.assertEquals(complete_url('http://www.google.com/path/'),
+            'http://www.google.com/path/'
+        )
+
+    def testNoDomain(self):
+        translation.activate('de')
+        self.assertRaises(ImproperlyConfigured, complete_url, '/path/')

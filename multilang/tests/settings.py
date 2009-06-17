@@ -13,11 +13,17 @@ LANGUAGES = (
     ('de', gettext('German')),
 )
 
+MULTILANG_LANGUAGE_DOMAINS = {
+    'en': ('www.trapeze-en.com', 'English Site'),
+    'fr': ('www.trapeze-fr.com', 'French Site')
+}
+
 MIDDLEWARE_CLASSES = (
     'multilang.middleware.URLCacheResetMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'multilang.middleware.LangInPathMiddleware',
+    'multilang.middleware.LangInDomainMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
