@@ -176,11 +176,11 @@ class ReverseForLanguageTestCase(TestCase):
         )
 
 
-class LangInURLTestCase(TestCase):
+class LangInPathTestCase(TestCase):
     """
     Test language setting via URL path
-    LocaleMiddleware and LangInURLMiddleware must be listed in MIDDLEWARE_CLASSES
-    for these tests to run properly.
+    LocaleMiddleware and LangInPathMiddleware must be listed in
+    MIDDLEWARE_CLASSES for these tests to run properly.
     """
     def setUp(self):
         self.client = Client()

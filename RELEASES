@@ -7,7 +7,7 @@ Tagged on <date>, 2009 by <name> <<email>>
 New Features
 ------------
 * Added support for separate domains for each language.
-
+* Renamed LangInURLMiddleware to LangInPathMiddleware
 
 Known issues
 ------------
@@ -21,7 +21,7 @@ Bugs Fixed
 
 Upgrade Instructions
 --------------------
-* None
+* If you were using LangInURLMiddleware, replace it with LangInPathMiddleware
 
 
 

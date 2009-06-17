@@ -5,11 +5,11 @@ from django.utils import translation
 from multilang.translators import URLTranslator, AutodetectScheme
 
 
-class LangInURLMiddleware(object):
+class LangInPathMiddleware(object):
     """
-    Middleware for determining site's language via a language code in the URL
-    This needs to be installed after the LocaleMiddleware so it can override that
-    middleware's decisions.
+    Middleware for determining site's language via a language code in the path
+    This needs to be installed after the LocaleMiddleware so it can override
+    that middleware's decisions.
     """
     def __init__(self):
         self.lang_codes = set(dict(settings.LANGUAGES).keys())
@@ -57,7 +57,7 @@ class URLCacheResetMiddleware(object):
     be cleared between requests because the URLResolver objects in the cache
     are locked into one language, and the next request might be in a different
     language.
-    
+
     This middleware is required if the project uses translated URLs.
     """
     def process_response(self, request, response):

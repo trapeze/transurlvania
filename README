@@ -25,7 +25,7 @@ model uses multilang's translatable DB solution, it would be `self.language`.
 Language Setting Via URL
 ------------------------
 
-Use LangInURLMiddleware and special root URLconf to embed the language code
+Use LangInPathMiddleware and special root URLconf to embed the language code
 in the URL path.
 
 This supersedes Django's usual language detection, so any URL with a language
@@ -77,9 +77,9 @@ listed in the `BLOCKED_LANGUAGES` setting in the settings file.
 Admin
 -----
 
-Two ModelAdmin classes are provided under multilang.admin to create a better 
+Two ModelAdmin classes are provided under multilang.admin to create a better
 workflow in the Django administration when adding and editing multilang models.
-Subclass LangTranslatableModelAdmin and LangAgnosticModelAdmin accordingly when 
+Subclass LangTranslatableModelAdmin and LangAgnosticModelAdmin accordingly when
 creating admin classes for translatable model pairs.
 
 Also make sure that the multilang/media folder is symlinked from your project's
