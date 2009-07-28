@@ -1,5 +1,6 @@
 import re
 
+from django.conf import settings
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver, get_callable
 from django.core.urlresolvers import NoReverseMatch
 from django.core.urlresolvers import get_script_prefix
@@ -24,6 +25,10 @@ def turl(regex, view, kwargs=None, name=None, prefix=''):
             if prefix:
                 view = prefix + '.' + view
         return MultilangRegexURLPattern(regex, view, kwargs, name)
+
+
+def lang_prefixed(urlconf_name):
+    return LangSelectionRegexURLResolver(urlconf_name)
 
 
 _resolvers = {}
@@ -155,3 +160,18 @@ class MultilangRegexURLResolver(RegexURLResolver):
             self._lang_reverse_dicts[lang] = self._build_reverse_dict_for_lang(lang)
         return self._lang_reverse_dicts[lang]
     reverse_dict = property(get_reverse_dict)
+
+
+class LangSelectionRegexURLResolver(MultilangRegexURLResolver):
+    def __init__(self, urlconf_name, default_kwargs=None):
+        # urlconf_name is a string representing the module containing urlconfs.
+        self.urlconf_name = urlconf_name
+        self.callback = None
+        self.default_kwargs = default_kwargs or {}
+        self._lang_reverse_dicts = {}
+        self._regex_dict = {}
+
+    def get_regex(self, lang=None):
+        lang = lang or get_language()
+        return re.compile('^%s/' % lang)
+    regex = property(get_regex)

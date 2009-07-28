@@ -3,7 +3,7 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.utils.translation import ugettext_noop as _
 
-from multilang.urlresolvers import turl
+from multilang.urlresolvers import turl, lang_prefixed
 
 
 admin.autodiscover()
@@ -11,7 +11,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Language Prefixed URLs
-    turl(_(r'^LANG_CODE/'), include('multilang.tests.urls')),
+    lang_prefixed('multilang.tests.urls'),
 
     # Home / Landing
     (r'^$', 'multilang.tests.views.multilang_home'),
