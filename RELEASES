@@ -1,3 +1,37 @@
+multilang-0.9.0FINAL
+====================
+
+Tagged on August 11, 2009 by Zach Mathew <zmathew@trapeze.com>
+
+
+New Features
+------------
+* None
+
+
+Known issues
+------------
+* D001011-139 - README isn't friendly to non-devs
+* D001011-163: Language switching fails if an exact translation isn't
+  available
+* D001011-174: multilang: admin needs a save button
+
+
+Bugs Fixed
+----------
+* None
+
+
+Upgrade Instructions
+--------------------
+* None
+
+
+
+* * *
+
+
+
 multilang-0.9.0ALPHA
 ====================
 
@@ -14,7 +48,11 @@ Known issues
   available
 * D001011-174: multilang: admin needs a save button
 
+
+
 * * *
+
+
 
 multilang-0.8.0FINAL
 ====================
@@ -113,7 +151,7 @@ Upgrade Instructions
 
 
 
-***
+* * *
 
 
 
