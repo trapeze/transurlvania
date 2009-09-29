@@ -15,9 +15,10 @@ from multilang.settings import LANGUAGE_DOMAINS
 
 def turl(regex, view, kwargs=None, name=None, prefix=''):
     # Copied from django.conf.urls.defaults.url
-    if type(view) == list:
+    if isinstance(view, (list,tuple)):
         # For include(...) processing.
-        return MultilangRegexURLResolver(regex, view[0], kwargs)
+        urlconf_module, app_name, namespace = view
+        return MultilangRegexURLResolver(regex, urlconf_module, kwargs, app_name=app_name, namespace=namespace)
     else:
         if isinstance(view, basestring):
             if not view:
@@ -107,14 +108,18 @@ class MultilangRegexURLPattern(RegexURLPattern):
 
 
 class MultilangRegexURLResolver(RegexURLResolver):
-    def __init__(self, regex, urlconf_name, default_kwargs=None):
+    def __init__(self, regex, urlconf_name, default_kwargs=None, app_name=None, namespace=None):
         # regex is a string representing a regular expression.
         # urlconf_name is a string representing the module containing urlconfs.
         self._raw_regex = regex
         self.urlconf_name = urlconf_name
         self.callback = None
         self.default_kwargs = default_kwargs or {}
+        self.namespace = namespace
+        self.app_name = app_name
         self._lang_reverse_dicts = {}
+        self._namespace_dict = None
+        self._app_dict = None
         self._regex_dict = {}
 
     def get_regex(self, lang=None):
@@ -163,12 +168,16 @@ class MultilangRegexURLResolver(RegexURLResolver):
 
 
 class LangSelectionRegexURLResolver(MultilangRegexURLResolver):
-    def __init__(self, urlconf_name, default_kwargs=None):
+    def __init__(self, urlconf_name, default_kwargs=None, app_name=None, namespace=None):
         # urlconf_name is a string representing the module containing urlconfs.
         self.urlconf_name = urlconf_name
         self.callback = None
         self.default_kwargs = default_kwargs or {}
+        self.namespace = namespace
+        self.app_name = app_name
         self._lang_reverse_dicts = {}
+        self._namespace_dict = None
+        self._app_dict = None
         self._regex_dict = {}
 
     def get_regex(self, lang=None):
