@@ -1,3 +1,27 @@
+multilang-2.0.0ALPHA
+=====================
+
+Tagged on September 29, 2009 by Sam Bull <sbull@trapeze.com>
+
+New Features
+------------
+* Django 1.1 compatible
+
+Known issues
+------------
+* D001011-139 - README isn't friendly to non-devs
+* D001011-163 - Language switching fails if an exact translation isn't
+  available
+* D001011-174 - admin needs a save button
+* D001011-195 - Unexpected error in this_page_in_lang templatetag when
+  providing wrong number of parameters
+
+Bugs Fixed
+----------
+* D001011-200 - Multilang doesn't work with Django 1.1
+
+* * *
+
 multilang-0.9.0FINAL
 ====================
 
