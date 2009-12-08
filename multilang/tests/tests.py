@@ -307,14 +307,41 @@ class LanguageSwitchingTestCase(TestCase):
         self.assertEqual(french_version_url,
             'http://www.trapeze-fr.com/fr/nouvelle/histoire-du-test-francais/'
         )
+        
+    def testThisPageInLangTagWithFallBack(self):
+        
+        template = Template('{% load multilang_tags %}'
+            '{% this_page_in_lang "fr" "/en/home/" %}'
+        )
+        output = template.render(Context({}))
+        self.assertEquals(output, "/en/home/")
+        
+    def testThisPageInLangTagWithVariableFallBack(self):
+        
+        template = Template('{% load multilang_tags %}'
+            '{% url stuff as myurl %}'
+            '{% this_page_in_lang "fr" myurl %}'
+        )
+        output = template.render(Context({}))
+        self.assertEquals(output, '/non-trans-stuff/')
+    
+    def testThisPageInLangTagNoArgs(self):
+        try:
+            template = Template('{% load multilang_tags %}'
+                '{% this_page_in_lang %}'
+            )
+        except TemplateSyntaxError, e:
+            self.assertEquals(e.message, 'this_page_in_lang tag requires at least one argument')
+        else:
+            self.fail()
     
     def testThisPageInLangTagExtraArgs(self):
         try:
             template = Template('{% load multilang_tags %}'
-                '{% this_page_in_lang "fr" asasd %}'
+                '{% this_page_in_lang "fr" "/home/" "/sadf/" %}'
             )
         except TemplateSyntaxError, e:
-            self.assertEquals(e.message, 'this_page_in_lang tag requires a single argument')
+            self.assertEquals(e.message, 'this_page_in_lang tag takes at most two arguments')
         else:
             self.fail()
         
