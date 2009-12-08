@@ -1,12 +1,36 @@
-Multilang Documentation
-=======================
+Multilang
+=========
+
+
+Introduction
+------------
 
 Multilang is a suite of tools to help in the building of a multi-lingual
-Django project. It contains several components:
+Django project. Primarily it provides tools for storing dynamic multi-lingual
+data and translatable urls.
 
 
-Translatable URLs
------------------
+Features
+--------
+
+* **Translatable Dynamic Data** - objects in the database can be made translatable. In the admin you will see tabs for every language and you can click on a tab to edit an objects translation in that language.
+
+* **Translatable URLs** - the same page can have a different url in a different language. (eg /products/ can be /produits/ in French)
+
+
+Installation
+------------
+
+* Add `multilang` to `INSTALLED_APPS` in your settings file
+* Add the following middlewares to `MIDDLEWARE_CLASSES` in your settings file:
+    * `multilang.middleware.URLCacheResetMiddleware` (must be before the `SessionMiddleware`)
+    * `multilang.middleware.MultilangMiddleware`
+
+
+Usage
+-----
+
+### Translatable URLs
 
 Use the `turl` function in urlresolvers in place of the usual `url` function
 when declaring URL patterns, combined with the `ugettext_noop` gettext function
@@ -24,8 +48,7 @@ return a list or tuple with this pattern:
 model uses multilang's translatable DB solution, it would be `self.language`.
 
 
-Language Setting Via URL or Domain
-----------------------------------
+### Language Setting Via URL or Domain
 
 Use LangInPathMiddleware and special root URLconf to embed the language code
 in the URL path.
@@ -44,8 +67,7 @@ for an example.
 (ie. with the domain)
 
 
-Translatable DB
----------------
+### Translatable DB
 
 The two-model translation system that's provided here requires that you
 manually specify a foreign key from your `LangTranslatable` model to your
@@ -57,8 +79,7 @@ in it, since it is used for finding translations.
 See `multilang/tests/models.py` for an example.
 
 
-Translation Switching
----------------------
+### Translation Switching
 
 Add MultilangMiddleware to the list of middleware classes and add the
 "translate" context processor to the list of template context processors
@@ -71,22 +92,16 @@ be determined in a special way.
 To make a model compatible with this system, it needs to implement a
 `get_translation` method. The provided translatable DB solution does this.
 
-TODO: An additional template tag should be provided that generates a list
-of the available translations of the current page.
-
-TODO: Should there be a way for translations to "fall back" to other locations
-on the site if a page-specific translation can't be found?
+NOTE: You should be aware of cases where equivalent translation does not exist. In this case "`this_page_in_lang`" will not return anything. You should either not use the "`this_page_in_lang`" tag or write your own custom translation scheme.
 
 
-Language Hiding
----------------
+### Language Based Blocking
 
 The BlockLocaleMiddleware will block non-admins from accessing the site in any language
 listed in the `BLOCKED_LANGUAGES` setting in the settings file.
 
 
-Admin
------
+### Admin
 
 Two ModelAdmin classes are provided under multilang.admin to create a better
 workflow in the Django administration when adding and editing multilang models.
