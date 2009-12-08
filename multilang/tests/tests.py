@@ -4,7 +4,7 @@ import re
 from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import get_resolver, reverse, clear_url_caches
-from django.template import Context, Template
+from django.template import Context, Template, TemplateSyntaxError
 from django.test import TestCase, Client
 from django.utils import translation
 
@@ -307,7 +307,17 @@ class LanguageSwitchingTestCase(TestCase):
         self.assertEqual(french_version_url,
             'http://www.trapeze-fr.com/fr/nouvelle/histoire-du-test-francais/'
         )
-
+    
+    def testThisPageInLangTagExtraArgs(self):
+        try:
+            template = Template('{% load multilang_tags %}'
+                '{% this_page_in_lang "fr" asasd %}'
+            )
+        except TemplateSyntaxError, e:
+            self.assertEquals(e.message, 'this_page_in_lang tag requires a single argument')
+        else:
+            self.fail()
+        
 
 class MultiLangAdminTestCase(TestCase):
     """

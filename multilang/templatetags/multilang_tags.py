@@ -65,7 +65,7 @@ def this_page_in_lang(parser, token):
     """
     bits = token_splitter(token)
     if len(bits['args']) != 1:
-        raise template.TemplateSyntaxError, "%r tag requires a single argument" % tag_name
+        raise template.TemplateSyntaxError, "%s tag requires a single argument" % bits['tag_name']
     return ThisPageInLangNode(bits['args'][0], bits['context_var'])
 
 
