@@ -6,6 +6,8 @@
         <li class="{% if lang.obj %}exists{% ifequal lang.obj original %} active{% endifequal %}{% else %}{% ifequal trans_active_lang lang.code %} active{% endifequal %}{% endif %}"><a href="{{ lang.url }}">{{ lang.name }}</a></li>
         {% endfor %}
     </ul>
+
+    <input type="submit" value="{% trans 'Save' %}" name="_savetrans" class="add-trans" {{ onclick_attrib }} />
     
     <input type="submit" value="{% trans 'Save and Add/Edit Translation:' %}" name="_addtrans" class="add-trans" {{ onclick_attrib }} />
     
