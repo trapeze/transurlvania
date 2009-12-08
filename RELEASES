@@ -1,3 +1,36 @@
+multilang-UNRELEASED
+====================
+
+Tagged on ??, 2009 by Zach Mathew <zmathew@trapeze.com>
+
+
+Major Code Changes
+------------------
+* None
+
+
+Bugs Fixes and Small Enhancements
+---------------------------------
+* D001011-139: multilang: README isn't friendly to non-devs
+* D001011-195: multilang: Unexpected error in this_page_in_lang templatetag when providing wrong number of parameters
+* D001011-163: Language switching fails if an exact translation isn't available
+
+
+Upgrade Instructions
+--------------------
+* None
+
+
+Known issues
+------------
+* None
+
+
+
+* * *
+
+
+
 multilang-2.0.0ALPHA
 =====================
 
