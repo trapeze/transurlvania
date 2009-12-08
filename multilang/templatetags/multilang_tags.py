@@ -64,16 +64,26 @@ def this_page_in_lang(parser, token):
 
     """
     bits = token_splitter(token)
-    if len(bits['args']) != 1:
-        raise template.TemplateSyntaxError, "%s tag requires a single argument" % bits['tag_name']
-    return ThisPageInLangNode(bits['args'][0], bits['context_var'])
+    fallback = None
+    if len(bits['args']) < 1:
+        raise template.TemplateSyntaxError, "%s tag requires at least one argument" % bits['tag_name']
+    elif len(bits['args']) == 2:
+        fallback = bits['args'][1]
+    elif len(bits['args']) > 2:
+        raise template.TemplateSyntaxError, "%s tag takes at most two arguments" % bits['tag_name']
+    
+    return ThisPageInLangNode(bits['args'][0], fallback, bits['context_var'])
 
 
 class ThisPageInLangNode(template.Node):
-    def __init__(self, lang, context_var=None):
+    def __init__(self, lang, fallback=None, context_var=None):
         self.context_var = context_var
         self.lang = template.Variable(lang)
-
+        if fallback:
+            self.fallback = template.Variable(fallback)
+        else:
+            self.fallback = None
+        
     def render(self, context):
         try:
             output = context['_url_translator'].get_url(
@@ -81,7 +91,10 @@ class ThisPageInLangNode(template.Node):
             )
         except (KeyError, NoTranslationError), e:
             output = ''
-
+        
+        if (not output) and self.fallback:
+            output = self.fallback.resolve(context)
+        
         if self.context_var:
             context[self.context_var] = output
             return ''

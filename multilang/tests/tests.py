@@ -317,13 +317,13 @@ class LanguageSwitchingTestCase(TestCase):
         self.assertEquals(output, "/en/home/")
         
     def testThisPageInLangTagWithVariableFallBack(self):
-        
+        translation.activate('en')
         template = Template('{% load multilang_tags %}'
             '{% url stuff as myurl %}'
             '{% this_page_in_lang "fr" myurl %}'
         )
         output = template.render(Context({}))
-        self.assertEquals(output, '/non-trans-stuff/')
+        self.assertEquals(output, '/en/non-trans-stuff/')
     
     def testThisPageInLangTagNoArgs(self):
         try:

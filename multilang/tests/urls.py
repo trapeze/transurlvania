@@ -6,7 +6,7 @@ from multilang.urlresolvers import turl
 
 urlpatterns = patterns('multilang.tests.views',
     (r'^$', 'home'),
-    (r'^non-trans-stuff/$', 'stuff'),
+    url(r'^non-trans-stuff/$', 'stuff', name='stuff'),
     turl(_(r'^trans-things/$'), 'things'),
     turl(_(r'^multi-module-spangles/'), include('multilang.tests.spangles_urls')),
     turl(_(r'^news-story/(?P<slug>[-\w]+)/$'), 'news_story_detail', {}, name='multilang_test_news_detail'),
