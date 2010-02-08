@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from multilang.admin import LangTranslatableModelAdmin, LangAgnosticModelAdmin
 
-from multilang.tests.models import NewsStoryCore, NewsStory
+from test_app.models import NewsStoryCore, NewsStory
 
 
 class NewsStoryAdmin(LangTranslatableModelAdmin):

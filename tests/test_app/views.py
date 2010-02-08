@@ -1,7 +1,7 @@
 from django.views.generic import simple, list_detail
 from django.http import HttpResponse
 
-from multilang.tests.models import NewsStory
+from test_app.models import NewsStory
 
 
 def multilang_home(request):

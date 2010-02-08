@@ -1,7 +1,7 @@
 [
     {
         "pk": 1, 
-        "model": "tests.newsstorycore", 
+        "model": "test_app.newsstorycore", 
         "fields": {
             "publication_date": "2009-01-26 16:05:05", 
             "public": true
@@ -9,7 +9,7 @@
     }, 
     {
         "pk": 2, 
-        "model": "tests.newsstorycore", 
+        "model": "test_app.newsstorycore", 
         "fields": {
             "publication_date": "2009-03-26 16:05:05", 
             "public": true
@@ -17,7 +17,7 @@
     }, 
     {
         "pk": 1, 
-        "model": "tests.newsstory", 
+        "model": "test_app.newsstory", 
         "fields": {
             "headline": "English Test Story", 
             "core": 1, 
@@ -28,7 +28,7 @@
     }, 
     {
         "pk": 2, 
-        "model": "tests.newsstory", 
+        "model": "test_app.newsstory", 
         "fields": {
             "headline": "Histoire du Test Fran\u00e7ais", 
             "core": 1, 
@@ -39,7 +39,7 @@
     },
     {
         "pk": 3, 
-        "model": "tests.newsstory", 
+        "model": "test_app.newsstory", 
         "fields": {
             "headline": "A story without a translatin", 
             "core": 2, 

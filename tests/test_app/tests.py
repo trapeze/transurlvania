@@ -1,6 +1,7 @@
 #encoding=utf8
 import re
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import get_resolver, reverse, clear_url_caches
@@ -9,13 +10,14 @@ from django.test import TestCase, Client
 from django.utils import translation
 
 from multilang import urlresolvers as multilang_resolvers
-from multilang.tests import settings as test_settings
-from multilang.tests.models import NewsStory, NewsStoryCore
-from multilang.tests.views import home, stuff, things, spangles_stars, spangles_stripes
-from multilang.tests.views import multilang_home
 from multilang.translators import NoTranslationError
 from multilang.urlresolvers import reverse_for_language
 from multilang.utils import complete_url
+
+from tests import settings as test_settings
+from test_app.models import NewsStory, NewsStoryCore
+from test_app.views import home, stuff, things, spangles_stars, spangles_stripes
+from test_app.views import multilang_home
 
 
 class TransURLTestCase(TestCase):
@@ -25,7 +27,7 @@ class TransURLTestCase(TestCase):
     the LANGUAGES list in settings.
     """
     def setUp(self):
-        self.resolver = get_resolver('multilang.tests.urls')
+        self.resolver = get_resolver('tests.urls')
 
     def tearDown(self):
         translation.deactivate()
@@ -62,23 +64,23 @@ class TransURLTestCase(TestCase):
 
     def testRootURLReverses(self):
         translation.activate('en')
-        self.assertEqual(reverse(home, 'multilang.tests.urls'), '/')
+        self.assertEqual(reverse(home, 'tests.urls'), '/')
         translation.activate('fr')
-        self.assertEqual(reverse(home, 'multilang.tests.urls'), '/')
+        self.assertEqual(reverse(home, 'tests.urls'), '/')
 
     def testNormalURLReverses(self):
         translation.activate('en')
-        self.assertEqual(reverse(stuff, 'multilang.tests.urls'), '/non-trans-stuff/')
+        self.assertEqual(reverse(stuff, 'tests.urls'), '/non-trans-stuff/')
         translation.activate('fr')
-        self.assertEqual(reverse(stuff, 'multilang.tests.urls'), '/non-trans-stuff/')
+        self.assertEqual(reverse(stuff, 'tests.urls'), '/non-trans-stuff/')
 
     def testTransReverses(self):
         translation.activate('en')
-        self.assertEqual(reverse(spangles_stripes, 'multilang.tests.urls'), '/multi-module-spangles/trans-stripes/')
+        self.assertEqual(reverse(spangles_stripes, 'tests.urls'), '/multi-module-spangles/trans-stripes/')
         # Simulate URLResolver cache reset between requests
         clear_url_caches()
         translation.activate('fr')
-        self.assertEqual(reverse(spangles_stripes, 'multilang.tests.urls'), '/module-multi-de-spangles/trans-bandes/')
+        self.assertEqual(reverse(spangles_stripes, 'tests.urls'), '/module-multi-de-spangles/trans-bandes/')
 
 
 class ReverseForLanguageTestCase(TestCase):
@@ -88,7 +90,7 @@ class ReverseForLanguageTestCase(TestCase):
     the LANGUAGES list in settings.
     """
     def setUp(self):
-        self.resolver = get_resolver('multilang.tests.urls')
+        self.resolver = get_resolver('tests.urls')
 
     def tearDown(self):
         translation.deactivate()
@@ -101,21 +103,21 @@ class ReverseForLanguageTestCase(TestCase):
 
         translation.activate('en')
         self.assertEquals(
-            reverse_for_language(spangles_stripes, 'en', 'multilang.tests.urls'),
+            reverse_for_language(spangles_stripes, 'en', 'tests.urls'),
             '/multi-module-spangles/trans-stripes/'
         )
         self.assertEquals(
-            reverse_for_language(spangles_stripes, 'fr', 'multilang.tests.urls'),
+            reverse_for_language(spangles_stripes, 'fr', 'tests.urls'),
             '/module-multi-de-spangles/trans-bandes/'
         )
 
         translation.activate('fr')
         self.assertEquals(
-            reverse_for_language(spangles_stripes, 'fr', 'multilang.tests.urls'),
+            reverse_for_language(spangles_stripes, 'fr', 'tests.urls'),
             '/module-multi-de-spangles/trans-bandes/'
         )
         self.assertEquals(
-            reverse_for_language(spangles_stripes, 'en', 'multilang.tests.urls'),
+            reverse_for_language(spangles_stripes, 'en', 'tests.urls'),
             '/multi-module-spangles/trans-stripes/'
         )
 
@@ -129,21 +131,21 @@ class ReverseForLanguageTestCase(TestCase):
 
         translation.activate('en')
         self.assertEquals(
-            reverse_for_language(spangles_stripes, 'en', 'multilang.tests.urls'),
+            reverse_for_language(spangles_stripes, 'en', 'tests.urls'),
             '/multi-module-spangles/trans-stripes/'
         )
         self.assertEquals(
-            reverse_for_language(spangles_stripes, 'fr', 'multilang.tests.urls'),
+            reverse_for_language(spangles_stripes, 'fr', 'tests.urls'),
             'http://%s/module-multi-de-spangles/trans-bandes/' % fr_domain
         )
 
         translation.activate('fr')
         self.assertEquals(
-            reverse_for_language(spangles_stripes, 'fr', 'multilang.tests.urls'),
+            reverse_for_language(spangles_stripes, 'fr', 'tests.urls'),
             'http://%s/module-multi-de-spangles/trans-bandes/' % fr_domain
         )
         self.assertEquals(
-            reverse_for_language(spangles_stripes, 'en', 'multilang.tests.urls'),
+            reverse_for_language(spangles_stripes, 'en', 'tests.urls'),
             '/multi-module-spangles/trans-stripes/'
         )
 
@@ -159,21 +161,21 @@ class ReverseForLanguageTestCase(TestCase):
 
         translation.activate('en')
         self.assertEquals(
-            reverse_for_language(spangles_stripes, 'en', 'multilang.tests.urls'),
+            reverse_for_language(spangles_stripes, 'en', 'tests.urls'),
             'http://%s/multi-module-spangles/trans-stripes/' % en_domain
         )
         self.assertEquals(
-            reverse_for_language(spangles_stripes, 'fr', 'multilang.tests.urls'),
+            reverse_for_language(spangles_stripes, 'fr', 'tests.urls'),
             'http://%s/module-multi-de-spangles/trans-bandes/' % fr_domain
         )
 
         translation.activate('fr')
         self.assertEquals(
-            reverse_for_language(spangles_stripes, 'fr', 'multilang.tests.urls'),
+            reverse_for_language(spangles_stripes, 'fr', 'tests.urls'),
             'http://%s/module-multi-de-spangles/trans-bandes/' % fr_domain
         )
         self.assertEquals(
-            reverse_for_language(spangles_stripes, 'en', 'multilang.tests.urls'),
+            reverse_for_language(spangles_stripes, 'en', 'tests.urls'),
             'http://%s/multi-module-spangles/trans-stripes/' % en_domain
         )
 
@@ -356,27 +358,27 @@ class MultiLangAdminTestCase(TestCase):
         self.client.login(username="admin", password="admin")
 
     def testCoreAdminChangeListURL(self):
-        response = self.client.get('/admin/tests/newsstorycore/')
+        response = self.client.get('/admin/test_app/newsstorycore/')
         self.assertEqual(response.status_code, 200)
 
     def testTransAdminChangeListURL(self):
-        response = self.client.get('/admin/tests/newsstory/')
+        response = self.client.get('/admin/test_app/newsstory/')
         self.assertEqual(response.status_code, 200)
 
     def testCoreAdminAddViewURL(self):
-        response = self.client.get('/admin/tests/newsstorycore/add/')
+        response = self.client.get('/admin/test_app/newsstorycore/add/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin/ml_change_form.html')
 
     def testTransAdminAddViewURL(self):
-        response = self.client.get('/admin/tests/newsstory/add/')
+        response = self.client.get('/admin/test_app/newsstory/add/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin/ml_change_form.html')
 
     def testCoreAdminChangeViewURL(self):
         n = NewsStoryCore()
         n.save()
-        response = self.client.get('/admin/tests/newsstorycore/%s/' % n.pk)
+        response = self.client.get('/admin/test_app/newsstorycore/%s/' % n.pk)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin/ml_change_form.html')
 
@@ -385,7 +387,7 @@ class MultiLangAdminTestCase(TestCase):
         n.save()
         s = NewsStory(language="en", core=n, headline="test", slug="test", body="test")
         s.save()
-        response = self.client.get('/admin/tests/newsstory/%s/' % s.pk)
+        response = self.client.get('/admin/test_app/newsstory/%s/' % s.pk)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin/ml_change_form.html')
 

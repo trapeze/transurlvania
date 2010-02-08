@@ -30,7 +30,7 @@ MIDDLEWARE_CLASSES = (
     'multilang.middleware.MultilangMiddleware',
 )
 
-ROOT_URLCONF = 'multilang.tests.lang_prefixed_urls'
+ROOT_URLCONF = 'tests.lang_prefixed_urls'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.auth',
@@ -48,7 +48,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
 
     'multilang',
-    'multilang.tests',
+    'test_app',
 )
 
 TEMPLATE_DIRS = (

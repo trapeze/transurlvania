@@ -11,11 +11,11 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Language Prefixed URLs
-    lang_prefixed('multilang.tests.urls'),
+    lang_prefixed('tests.urls'),
 
     # Home / Landing
-    (r'^$', 'multilang.tests.views.multilang_home'),
+    (r'^$', 'test_app.views.multilang_home'),
 
     # Admin
-    url(r'^admin/(.*)', admin.site.root, name="admin"),
+    url(r'^admin/', include(admin.site.urls)),
 )
