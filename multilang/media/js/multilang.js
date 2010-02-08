@@ -11,7 +11,7 @@
 $(function() {
     $("select[name=_addtrans_lang]").change(function() {
         var index = this.selectedIndex;
-        
+
         $("select[name=_addtrans_lang]").each(function() {
             this.selectedIndex = index;
         });

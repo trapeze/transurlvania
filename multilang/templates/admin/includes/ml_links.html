@@ -8,9 +8,9 @@
     </ul>
 
     <input type="submit" value="{% trans 'Save' %}" name="_savetrans" class="add-trans" {{ onclick_attrib }} />
-    
+
     <input type="submit" value="{% trans 'Save and Add/Edit Translation:' %}" name="_addtrans" class="add-trans" {{ onclick_attrib }} />
-    
+
     <select name="_addtrans_lang">
         {% for lang in trans_langs %}
         <option value="{{ lang.0 }}"{% ifequal trans_active_lang lang.0 %} selected="selected"{% endifequal %}>{{ lang.1 }}</option>

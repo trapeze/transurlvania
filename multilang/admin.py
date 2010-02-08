@@ -19,8 +19,8 @@ class MultiLangModelAdmin(admin.ModelAdmin):
     `ml_lang_field_name` to introspect the given models, these can be
     overridden with different values if the models are using other names.
     
-    Subclass `LangTranslatableModelAdmin` or `LangAgnosticModelAdmin` when 
-    building admin classes, `MultiLangModelAdmin` is used as a shared base 
+    Subclass `LangTranslatableModelAdmin` or `LangAgnosticModelAdmin` when
+    building admin classes, `MultiLangModelAdmin` is used as a shared base
     class only - it should not be subclassed directly.
     """
     change_form_template = "admin/ml_change_form.html"
@@ -48,7 +48,7 @@ class MultiLangModelAdmin(admin.ModelAdmin):
             })
         except self.ml_trans_model.DoesNotExist:
             trans_obj = None
-        
+
         if trans_obj:
             return ("../../../%(app)s/%(model)s/%(id)s/" % {
                 "app": self.ml_trans_model._meta.app_label,
@@ -68,7 +68,7 @@ class MultiLangModelAdmin(admin.ModelAdmin):
 
     def _construct_trans_links(self, obj):
         trans_links = []
-        
+
         if len(obj._meta._fields()) > 1:
             trans_links.append({
                 "name": obj,
@@ -76,17 +76,17 @@ class MultiLangModelAdmin(admin.ModelAdmin):
                 "obj": obj,
                 "code": "",
             })
-        
+
         for lang, lang_name in dict(settings.LANGUAGES).iteritems():
             url, trans_obj = self._construct_trans_url(lang, obj)
-            
+
             trans_links.append({
                 "name": lang_name,
                 "url": url,
                 "obj": trans_obj,
                 "code": lang,
             })
-        
+
         return trans_links
 
 
@@ -95,7 +95,7 @@ class MultiLangModelAdmin(admin.ModelAdmin):
             getattr(settings, "JQUERY_PATH", "multilang/js/jquery.js"),
             "multilang/js/multilang.js",
         )
-        
+
         css = {
             "all": ("multilang/css/admin.css",),
         }
@@ -103,7 +103,7 @@ class MultiLangModelAdmin(admin.ModelAdmin):
 
 class LangTranslatableModelAdmin(MultiLangModelAdmin):
     """
-    A subclass of `MultiLangModelAdmin` that should be used for models that 
+    A subclass of `MultiLangModelAdmin` that should be used for models that
     have translatable fields and that link to a core model.
     """
     def __init__(self, model, admin_site):
@@ -111,7 +111,7 @@ class LangTranslatableModelAdmin(MultiLangModelAdmin):
 
         try:
             field = model._meta.get_field_by_name(self.ml_core_field_name)
-            
+
             self.ml_trans_model = model
             self.ml_core_model = field[0].rel.to
         except FieldDoesNotExist:
@@ -251,15 +251,15 @@ class LangTranslatableModelAdmin(MultiLangModelAdmin):
 
 class LangAgnosticModelAdmin(MultiLangModelAdmin):
     """
-    A subclass of `MultiLangModelAdmin` that should be used for core models 
+    A subclass of `MultiLangModelAdmin` that should be used for core models
     that have non-translatable fields and that relate to translatable objects.
     """
     def __init__(self, model, admin_site):
         super(LangAgnosticModelAdmin, self).__init__(model, admin_site)
-        
+
         try:
             field = model._meta.get_field_by_name(self.ml_relation_name)
-            
+
             self.ml_trans_model = field[0].model
             self.ml_core_model = model
         except FieldDoesNotExist:
@@ -272,8 +272,8 @@ class LangAgnosticModelAdmin(MultiLangModelAdmin):
                 "rel": self.ml_relation_name,
                 "model": model.__name__,
             })
-    
-    
+
+
     def response_add(self, request, obj, post_url_continue='../%s/'):
         if request.POST.has_key("_addtrans"):
             self.message_user(request, _('The %(name)s "%(obj)s" was added successfully.') % {
