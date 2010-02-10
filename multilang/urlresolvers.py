@@ -43,7 +43,7 @@ def get_resolver(urlconf, lang):
     return _resolvers[key]
 
 
-def reverse_for_language(viewname, lang, urlconf=None, args=None, kwargs=None, prefix=None):
+def reverse_for_language(viewname, lang, urlconf=None, args=None, kwargs=None, prefix=None, current_app=None):
     # Copied from Django 1.0 code in django.core.urlresolvers.RegexURLResolver.reverse
     args = args or []
     kwargs = kwargs or {}
@@ -51,10 +51,46 @@ def reverse_for_language(viewname, lang, urlconf=None, args=None, kwargs=None, p
         prefix = get_script_prefix()
     resolver = get_resolver(urlconf, lang)
 
+    if not isinstance(viewname, basestring):
+        view = viewname
+    else:
+        parts = viewname.split(':')
+        parts.reverse()
+        view = parts[0]
+        path = parts[1:]
+
+        resolved_path = []
+        while path:
+            ns = path.pop()
+
+            # Lookup the name to see if it could be an app identifier
+            try:
+                app_list = resolver.app_dict[ns]
+                # Yes! Path part matches an app in the current Resolver
+                if current_app and current_app in app_list:
+                    # If we are reversing for a particular app, use that namespace
+                    ns = current_app
+                elif ns not in app_list:
+                    # The name isn't shared by one of the instances (i.e., the default)
+                    # so just pick the first instance as the default.
+                    ns = app_list[0]
+            except KeyError:
+                pass
+
+            try:
+                extra, resolver = resolver.namespace_dict[ns]
+                resolved_path.append(ns)
+                prefix = prefix + extra
+            except KeyError, key:
+                if resolved_path:
+                    raise NoReverseMatch("%s is not a registered namespace inside '%s'" % (key, ':'.join(resolved_path)))
+                else:
+                    raise NoReverseMatch("%s is not a registered namespace" % key)
+
     if args and kwargs:
         raise ValueError("Don't mix *args and **kwargs in call to reverse()!")
     try:
-        lookup_view = get_callable(viewname, True)
+        lookup_view = get_callable(view, True)
     except (ImportError, AttributeError), e:
         raise NoReverseMatch("Error importing '%s': %s." % (lookup_view, e))
     if hasattr(resolver, 'get_reverse_dict'):
@@ -131,6 +167,8 @@ class MultilangRegexURLResolver(RegexURLResolver):
 
     def _build_reverse_dict_for_lang(self, lang):
         reverse_dict = MultiValueDict()
+        namespaces = {}
+        apps = {}
         for pattern in reversed(self.url_patterns):
             if hasattr(pattern, 'get_regex'):
                 p_pattern = pattern.get_regex(lang).pattern
@@ -139,24 +177,35 @@ class MultilangRegexURLResolver(RegexURLResolver):
             if p_pattern.startswith('^'):
                 p_pattern = p_pattern[1:]
             if isinstance(pattern, RegexURLResolver):
-                if hasattr(pattern, 'get_regex'):
-                    parent = normalize(pattern.get_regex(lang).pattern)
+                if pattern.namespace:
+                    namespaces[pattern.namespace] = (p_pattern, pattern)
+                    if pattern.app_name:
+                        apps.setdefault(pattern.app_name, []).append(pattern.namespace)
                 else:
-                    parent = normalize(pattern.regex.pattern)
-                if hasattr(pattern, 'get_reverse_dict'):
-                    sub_reverse_dict = pattern.get_reverse_dict(lang)
-                else:
-                    sub_reverse_dict = pattern.reverse_dict
-                for name in sub_reverse_dict:
-                    for matches, pat in sub_reverse_dict.getlist(name):
-                        new_matches = []
-                        for piece, p_args in parent:
-                            new_matches.extend([(piece + suffix, p_args + args) for (suffix, args) in matches])
-                        reverse_dict.appendlist(name, (new_matches, p_pattern + pat))
+                    if hasattr(pattern, 'get_regex'):
+                        parent = normalize(pattern.get_regex(lang).pattern)
+                    else:
+                        parent = normalize(pattern.regex.pattern)
+                    if hasattr(pattern, 'get_reverse_dict'):
+                        sub_reverse_dict = pattern.get_reverse_dict(lang)
+                    else:
+                        sub_reverse_dict = pattern.reverse_dict
+                    for name in sub_reverse_dict:
+                        for matches, pat in sub_reverse_dict.getlist(name):
+                            new_matches = []
+                            for piece, p_args in parent:
+                                new_matches.extend([(piece + suffix, p_args + args) for (suffix, args) in matches])
+                            reverse_dict.appendlist(name, (new_matches, p_pattern + pat))
+                    for namespace, (prefix, sub_pattern) in pattern.namespace_dict.items():
+                        namespaces[namespace] = (p_pattern + prefix, sub_pattern)
+                    for app_name, namespace_list in pattern.app_dict.items():
+                        apps.setdefault(app_name, []).extend(namespace_list)
             else:
                 bits = normalize(p_pattern)
                 reverse_dict.appendlist(pattern.callback, (bits, p_pattern))
                 reverse_dict.appendlist(pattern.name, (bits, p_pattern))
+        self._namespace_dict = namespaces
+        self._app_dict = apps
         return reverse_dict
 
     def get_reverse_dict(self, lang=None):

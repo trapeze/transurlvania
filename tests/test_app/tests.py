@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import get_resolver, reverse, clear_url_caches
+from django.core.urlresolvers import NoReverseMatch
 from django.template import Context, Template, TemplateSyntaxError
 from django.test import TestCase, Client
 from django.utils import translation
@@ -81,6 +82,12 @@ class TransURLTestCase(TestCase):
         clear_url_caches()
         translation.activate('fr')
         self.assertEqual(reverse(spangles_stripes, 'tests.urls'), '/module-multi-de-spangles/trans-bandes/')
+
+    def testReverseForLangSupportsAdmin(self):
+        try:
+            reverse_for_language('admin:test_app_newsstory_add', 'en')
+        except NoReverseMatch, e:
+            self.fail("Reverse lookup failed: %s" % e)
 
 
 class ReverseForLanguageTestCase(TestCase):
