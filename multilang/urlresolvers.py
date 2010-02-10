@@ -44,7 +44,8 @@ def get_resolver(urlconf, lang):
 
 
 def reverse_for_language(viewname, lang, urlconf=None, args=None, kwargs=None, prefix=None, current_app=None):
-    # Copied from Django 1.0 code in django.core.urlresolvers.RegexURLResolver.reverse
+    # Based on code in Django 1.1.1 in reverse and RegexURLResolver.reverse 
+    # in django.core.urlresolvers.
     args = args or []
     kwargs = kwargs or {}
     if prefix is None:
