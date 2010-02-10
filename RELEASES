@@ -1,3 +1,20 @@
+multilang-2.0.2ALPHA
+====================
+
+Tagged on February 9, 2010 by Sam Bull <sbull@trapeze.com>
+
+Bug Fixes and Small Enhancements
+--------------------------------
+* D001011-212	multilang: New-style admin urls incompatible with translatable URL
+* D001011-229	reverse_for_language doesn't work with namespaces
+
+Known Issues
+------------
+
+None
+
+* * *
+
 multilang-2.0.1ALPHA
 =====================
 
