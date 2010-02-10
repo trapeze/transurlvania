@@ -113,6 +113,8 @@ class MultilangRegexURLResolver(RegexURLResolver):
         # urlconf_name is a string representing the module containing urlconfs.
         self._raw_regex = regex
         self.urlconf_name = urlconf_name
+        if not isinstance(urlconf_name, basestring):
+            self._urlconf_module = self.urlconf_name
         self.callback = None
         self.default_kwargs = default_kwargs or {}
         self.namespace = namespace
@@ -129,33 +131,32 @@ class MultilangRegexURLResolver(RegexURLResolver):
 
     def _build_reverse_dict_for_lang(self, lang):
         reverse_dict = MultiValueDict()
-        if hasattr(self.urlconf_module, 'urlpatterns'):
-            for pattern in reversed(self.urlconf_module.urlpatterns):
+        for pattern in reversed(self.url_patterns):
+            if hasattr(pattern, 'get_regex'):
+                p_pattern = pattern.get_regex(lang).pattern
+            else:
+                p_pattern = pattern.regex.pattern
+            if p_pattern.startswith('^'):
+                p_pattern = p_pattern[1:]
+            if isinstance(pattern, RegexURLResolver):
                 if hasattr(pattern, 'get_regex'):
-                    p_pattern = pattern.get_regex(lang).pattern
+                    parent = normalize(pattern.get_regex(lang).pattern)
                 else:
-                    p_pattern = pattern.regex.pattern
-                if p_pattern.startswith('^'):
-                    p_pattern = p_pattern[1:]
-                if isinstance(pattern, RegexURLResolver):
-                    if hasattr(pattern, 'get_regex'):
-                        parent = normalize(pattern.get_regex(lang).pattern)
-                    else:
-                        parent = normalize(pattern.regex.pattern)
-                    if hasattr(pattern, 'get_reverse_dict'):
-                        sub_reverse_dict = pattern.get_reverse_dict(lang)
-                    else:
-                        sub_reverse_dict = pattern.reverse_dict
-                    for name in sub_reverse_dict:
-                        for matches, pat in sub_reverse_dict.getlist(name):
-                            new_matches = []
-                            for piece, p_args in parent:
-                                new_matches.extend([(piece + suffix, p_args + args) for (suffix, args) in matches])
-                            reverse_dict.appendlist(name, (new_matches, p_pattern + pat))
+                    parent = normalize(pattern.regex.pattern)
+                if hasattr(pattern, 'get_reverse_dict'):
+                    sub_reverse_dict = pattern.get_reverse_dict(lang)
                 else:
-                    bits = normalize(p_pattern)
-                    reverse_dict.appendlist(pattern.callback, (bits, p_pattern))
-                    reverse_dict.appendlist(pattern.name, (bits, p_pattern))
+                    sub_reverse_dict = pattern.reverse_dict
+                for name in sub_reverse_dict:
+                    for matches, pat in sub_reverse_dict.getlist(name):
+                        new_matches = []
+                        for piece, p_args in parent:
+                            new_matches.extend([(piece + suffix, p_args + args) for (suffix, args) in matches])
+                        reverse_dict.appendlist(name, (new_matches, p_pattern + pat))
+            else:
+                bits = normalize(p_pattern)
+                reverse_dict.appendlist(pattern.callback, (bits, p_pattern))
+                reverse_dict.appendlist(pattern.name, (bits, p_pattern))
         return reverse_dict
 
     def get_reverse_dict(self, lang=None):
