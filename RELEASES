@@ -1,3 +1,17 @@
+multilang-2.0.2STABLE
+=====================
+
+Tagged on February 15, 2010 by Sam Bull <sbull@trapeze.com>
+
+Identical to multilang-2.0.2ALPHA
+
+Known Issues
+------------
+
+* D001011-231 - lang-in-path middleware assumes language code is at root of path
+
+* * *
+
 multilang-2.0.2ALPHA
 ====================
 
