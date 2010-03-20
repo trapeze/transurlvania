@@ -63,7 +63,16 @@ language-specific resources of the site can all be identified by URL.
 See `multilang/tests/settings.py` and `multilang/tests/lang_prefixed_urls.py`
 for an example.
 
-*Use the `multilang.utils.complete_url` utility function to build full urls
+* You will also need to edit `urls_dev.py` to replace:
+
+    from urls import urlpatterns
+
+with:
+
+    from lang_prefixed_urls import urlpatterns
+
+
+* Use the `multilang.utils.complete_url` utility function to build full urls
 (ie. with the domain)
 
 
