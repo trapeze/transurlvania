@@ -1,3 +1,25 @@
+multilang-2.0.3STABLE
+=====================
+
+Tagged on March 20th, 2010 by Djoume Salvetti <dsalvetti@trapeze.com>
+
+* Documentation and test code only changes.
+
+Bug Fixes and Small Enhancements
+--------------------------------
+
+* D001011-275  test app include admin url twice
+* D001011-274  README should recommend to update urls_dev.py
+
+Known Issues
+------------
+
+* D001011-261 multilang: Urls are not translated when using url namespaces
+* D001011-237 multilang: Duplicate core models create when admin fieldsets are overridden
+* D001011-231 lang-in-path middleware assumes language code is at root of path
+
+* * *
+
 multilang-2.0.2STABLE
 =====================
 
