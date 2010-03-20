@@ -15,7 +15,4 @@ urlpatterns = patterns('',
 
     # Home / Landing
     (r'^$', 'test_app.views.multilang_home'),
-
-    # Admin
-    url(r'^admin/', include(admin.site.urls)),
 )

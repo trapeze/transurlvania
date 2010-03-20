@@ -52,7 +52,6 @@ class TransURLTestCase(TestCase):
         self.assertEqual(self.resolver.resolve('/trans-chose/')[0], things)
 
     def testMultiModuleMixedURL(self):
-        translation.activate('en')
         self.assertEqual(self.resolver.resolve('/multi-module-spangles/non-trans-stars/')[0], spangles_stars)
         translation.activate('fr')
         self.assertEqual(self.resolver.resolve('/module-multi-de-spangles/non-trans-stars/')[0], spangles_stars)
@@ -365,27 +364,33 @@ class MultiLangAdminTestCase(TestCase):
         self.client.login(username="admin", password="admin")
 
     def testCoreAdminChangeListURL(self):
-        response = self.client.get('/admin/test_app/newsstorycore/')
+        url = reverse_for_language('admin:test_app_newsstorycore_changelist', 'en')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def testTransAdminChangeListURL(self):
-        response = self.client.get('/admin/test_app/newsstory/')
+        url = reverse_for_language('admin:test_app_newsstory_changelist', 'en')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def testCoreAdminAddViewURL(self):
-        response = self.client.get('/admin/test_app/newsstorycore/add/')
+        url = reverse_for_language('admin:test_app_newsstorycore_add', 'en')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin/ml_change_form.html')
 
     def testTransAdminAddViewURL(self):
-        response = self.client.get('/admin/test_app/newsstory/add/')
+        url = reverse_for_language('admin:test_app_newsstory_add', 'en')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin/ml_change_form.html')
 
     def testCoreAdminChangeViewURL(self):
         n = NewsStoryCore()
         n.save()
-        response = self.client.get('/admin/test_app/newsstorycore/%s/' % n.pk)
+        url = reverse_for_language('admin:test_app_newsstorycore_change', 'en',
+                args=(n.pk,))
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin/ml_change_form.html')
 
@@ -394,7 +399,9 @@ class MultiLangAdminTestCase(TestCase):
         n.save()
         s = NewsStory(language="en", core=n, headline="test", slug="test", body="test")
         s.save()
-        response = self.client.get('/admin/test_app/newsstory/%s/' % s.pk)
+        url = reverse_for_language('admin:test_app_newsstory_change', 'en',
+                args=(n.pk,))
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin/ml_change_form.html')
 
