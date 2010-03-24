@@ -1,3 +1,22 @@
+multilang-2.0.4STABLE
+=====================
+
+Tagged on March 24, 2010 by Sam Bull <sbull@trapeze.com>
+
+Bug Fixes and Small Enhancements
+--------------------------------
+
+* R001011-117 - Add language-specific-object friendly SearchIndex class
+
+Known Issues
+------------
+
+* D001011-261 - multilang: Urls are not translated when using url namespaces
+* D001011-237 - multilang: Duplicate core models create when admin fieldsets are overridden
+* D001011-231 - lang-in-path middleware assumes language code is at root of path
+
+* * *
+
 multilang-2.0.3STABLE
 =====================
 
