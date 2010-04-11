@@ -10,13 +10,12 @@ from django.template import Context, Template, TemplateSyntaxError
 from django.test import TestCase, Client
 from django.utils import translation
 
+import multilang.settings
 from multilang import urlresolvers as multilang_resolvers
 from multilang.translators import NoTranslationError
 from multilang.urlresolvers import reverse_for_language
 from multilang.utils import complete_url
 
-from tests import settings as test_settings
-from test_app.models import NewsStory, NewsStoryCore
 from test_app.views import home, stuff, things, spangles_stars, spangles_stripes
 from test_app.views import multilang_home
 
@@ -100,12 +99,10 @@ class ReverseForLanguageTestCase(TestCase):
 
     def tearDown(self):
         translation.deactivate()
-        test_settings.LANGUAGE_DOMAINS = {}
-        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
+        multilang.settings.LANGUAGE_DOMAINS = {}
 
     def testSameDomain(self):
-        test_settings.LANGUAGE_DOMAINS = {}
-        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
+        multilang.settings.LANGUAGE_DOMAINS = {}
 
         translation.activate('en')
         self.assertEquals(
@@ -128,12 +125,11 @@ class ReverseForLanguageTestCase(TestCase):
         )
 
     def testOneDifferentDomain(self):
-        test_settings.LANGUAGE_DOMAINS = {
+        multilang.settings.LANGUAGE_DOMAINS = {
             'fr': ('www.trapeze-fr.com', 'French Site')
         }
-        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
 
-        fr_domain = test_settings.LANGUAGE_DOMAINS['fr'][0]
+        fr_domain = multilang.settings.LANGUAGE_DOMAINS['fr'][0]
 
         translation.activate('en')
         self.assertEquals(
@@ -156,14 +152,13 @@ class ReverseForLanguageTestCase(TestCase):
         )
 
     def testBothDifferentDomains(self):
-        test_settings.LANGUAGE_DOMAINS = {
+        multilang.settings.LANGUAGE_DOMAINS = {
             'en': ('www.trapeze.com', 'English Site'),
             'fr': ('www.trapeze-fr.com', 'French Site')
         }
-        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
 
-        en_domain = test_settings.LANGUAGE_DOMAINS['en'][0]
-        fr_domain = test_settings.LANGUAGE_DOMAINS['fr'][0]
+        en_domain = multilang.settings.LANGUAGE_DOMAINS['en'][0]
+        fr_domain = multilang.settings.LANGUAGE_DOMAINS['fr'][0]
 
         translation.activate('en')
         self.assertEquals(
@@ -273,47 +268,26 @@ class LanguageSwitchingTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.french_version_anchor_re = re.compile(r'<a class="french-version-link" href="([^"]*)">')
+        multilang.settings.LANGUAGE_DOMAINS = {}
 
     def tearDown(self):
         translation.deactivate()
-        test_settings.LANGUAGE_DOMAINS = {}
-        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
+        multilang.settings.LANGUAGE_DOMAINS = {}
 
     def testDefaultViewBasedSwitching(self):
         response = self.client.get('/en/trans-things/')
         french_version_url = self.french_version_anchor_re.search(response.content).group(1)
         self.assertEqual(french_version_url, '/fr/trans-chose/')
 
-    def testDefaultObjectBasedSwitching(self):
-        test_settings.LANGUAGE_DOMAINS = {}
-        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
-
-        response = self.client.get('/en/news-story/english-test-story/')
-        french_version_url = self.french_version_anchor_re.search(response.content).group(1)
-        self.assertEqual(french_version_url, '/fr/nouvelle/histoire-du-test-francais/')
-
     def testDefaultViewBasedSwitchingWithSeparateDomains(self):
-        test_settings.LANGUAGE_DOMAINS = {
+        multilang.settings.LANGUAGE_DOMAINS = {
             'fr': ('www.trapeze-fr.com', 'French Site')
         }
-        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
 
         response = self.client.get('/en/trans-things/')
         french_version_url = self.french_version_anchor_re.search(response.content).group(1)
         self.assertEqual(french_version_url,
             'http://www.trapeze-fr.com/fr/trans-chose/'
-        )
-
-    def testDefaultObjectBasedSwitchingWithSeparateDomains(self):
-        test_settings.LANGUAGE_DOMAINS = {
-            'fr': ('www.trapeze-fr.com', 'French Site')
-        }
-        multilang_resolvers.LANGUAGE_DOMAINS = test_settings.LANGUAGE_DOMAINS
-
-        response = self.client.get('/en/news-story/english-test-story/')
-        french_version_url = self.french_version_anchor_re.search(response.content).group(1)
-        self.assertEqual(french_version_url,
-            'http://www.trapeze-fr.com/fr/nouvelle/histoire-du-test-francais/'
         )
 
     def testThisPageInLangTagWithFallBack(self):
@@ -352,67 +326,6 @@ class LanguageSwitchingTestCase(TestCase):
             self.assertEquals(e.message, 'this_page_in_lang tag takes at most two arguments')
         else:
             self.fail()
-
-
-class MultiLangAdminTestCase(TestCase):
-    """
-    Test MultiLangAdmin pages to make sure they exist
-    """
-    def setUp(self):
-        User.objects.create_superuser("admin", "admin@test.com", "admin")
-        self.client = Client()
-        self.client.login(username="admin", password="admin")
-
-    def testCoreAdminChangeListURL(self):
-        url = reverse_for_language('admin:test_app_newsstorycore_changelist', 'en')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    def testTransAdminChangeListURL(self):
-        url = reverse_for_language('admin:test_app_newsstory_changelist', 'en')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    def testCoreAdminAddViewURL(self):
-        url = reverse_for_language('admin:test_app_newsstorycore_add', 'en')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'admin/ml_change_form.html')
-
-    def testTransAdminAddViewURL(self):
-        url = reverse_for_language('admin:test_app_newsstory_add', 'en')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'admin/ml_change_form.html')
-
-    def testCoreAdminChangeViewURL(self):
-        n = NewsStoryCore()
-        n.save()
-        url = reverse_for_language('admin:test_app_newsstorycore_change', 'en',
-                args=(n.pk,))
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'admin/ml_change_form.html')
-
-    def testTransAdminChangeViewURL(self):
-        n = NewsStoryCore()
-        n.save()
-        s = NewsStory(language="en", core=n, headline="test", slug="test", body="test")
-        s.save()
-        url = reverse_for_language('admin:test_app_newsstory_change', 'en',
-                args=(n.pk,))
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'admin/ml_change_form.html')
-
-
-class CoreAutosaveTestCase(TestCase):
-    def testCoreCreated(self):
-        ns = NewsStory(language='en', headline='test', slug='test', body='test')
-        ns.save()
-        self.assertTrue(isinstance(ns.core, NewsStoryCore))
-        ns1 = NewsStory.objects.get(pk=ns.pk)
-        self.assertTrue(isinstance(ns1.core, NewsStoryCore))
 
 
 class TransInLangTagTestCase(TestCase):
@@ -482,28 +395,6 @@ class TransInLangTagTestCase(TestCase):
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'French|Français|Französisch')
-
-
-class MultilangModelTestCase(TestCase):
-    """
-    Test the internal translatable model functionality
-    """
-    fixtures = ['test.json']
-
-    def testTranslationIsProvidedWhenAvailable(self):
-        # Get English news story core that has English and French translations
-        ns_core = NewsStoryCore.objects.get(pk=1)
-        ns_en = ns_core.translations.get(language='en')
-        ns_fr = ns_core.translations.get(language='fr')
-
-        self.assertEqual(ns_en.get_translation('fr'), ns_fr)
-
-    def testRaisesErrorWhenTranslationUnavailable(self):
-        # Get English news story core that only has an English translation
-        ns_core = NewsStoryCore.objects.get(pk=2)
-        ns_en = ns_core.translations.get(language='en')
-
-        self.assertRaises(NoTranslationError, ns_en.get_translation, 'fr')
 
 
 def CompleteURLTestCase(TestCase):

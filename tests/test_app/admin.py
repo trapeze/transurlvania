@@ -1,18 +1,11 @@
 from django.contrib import admin
 
-from multilang.admin import LangTranslatableModelAdmin, LangAgnosticModelAdmin
-
-from test_app.models import NewsStoryCore, NewsStory
+from test_app.models import NewsStory
 
 
-class NewsStoryAdmin(LangTranslatableModelAdmin):
-    list_display = ('headline', 'language',)
+class NewsStoryAdmin(admin.ModelAdmin):
+    list_display = ('headline', 'language', 'publication_date')
     list_filter = ('language',)
 
 
-class NewsStoryCoreAdmin(LangAgnosticModelAdmin):
-    list_display = ('headline', 'publication_date',)
-
-
 admin.site.register(NewsStory, NewsStoryAdmin)
-admin.site.register(NewsStoryCore, NewsStoryCoreAdmin)

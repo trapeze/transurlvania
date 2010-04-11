@@ -1,29 +1,14 @@
 [
     {
         "pk": 1, 
-        "model": "test_app.newsstorycore", 
-        "fields": {
-            "publication_date": "2009-01-26 16:05:05", 
-            "public": true
-        }
-    }, 
-    {
-        "pk": 2, 
-        "model": "test_app.newsstorycore", 
-        "fields": {
-            "publication_date": "2009-03-26 16:05:05", 
-            "public": true
-        }
-    }, 
-    {
-        "pk": 1, 
         "model": "test_app.newsstory", 
         "fields": {
             "headline": "English Test Story", 
-            "core": 1, 
             "body": "This is the body of the English test story", 
             "slug": "english-test-story", 
-            "language": "en"
+            "language": "en",
+            "publication_date": "2009-01-26 16:05:05", 
+            "public": true
         }
     }, 
     {
@@ -31,21 +16,23 @@
         "model": "test_app.newsstory", 
         "fields": {
             "headline": "Histoire du Test Fran\u00e7ais", 
-            "core": 1, 
             "body": "", 
             "slug": "histoire-du-test-francais", 
-            "language": "fr"
+            "language": "fr",
+            "publication_date": "2009-01-26 16:05:05", 
+            "public": true
         }
     },
     {
         "pk": 3, 
         "model": "test_app.newsstory", 
         "fields": {
-            "headline": "A story without a translatin", 
-            "core": 2, 
+            "headline": "A story without a translation", 
             "body": "This is the body of the English-only test story", 
             "slug": "story-without-translation", 
-            "language": "en"
+            "language": "en",
+            "publication_date": "2009-03-26 16:05:05", 
+            "public": true
         }
     }
 ]
