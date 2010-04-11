@@ -1,36 +1,44 @@
-Multilang
-=========
+Multilang URLs
+==============
 
 
 Introduction
 ------------
 
-Multilang is a suite of tools to help in the building of a multi-lingual
-Django project. Primarily it provides tools for storing dynamic multi-lingual
-data and translatable urls.
-
+This application provides URL-related utilities for multi-lingual
+projects.
 
 Features
 --------
 
-* **Translatable Dynamic Data** - objects in the database can be made translatable. In the admin you will see tabs for every language and you can click on a tab to edit an objects translation in that language.
+* **Localizable URLs** - the same page can have a different url in a different
+  language. (eg /products/ can be /produits/ in French)
 
-* **Translatable URLs** - the same page can have a different url in a different language. (eg /products/ can be /produits/ in French)
+* **Language-in-Path** - a replacement for Django's language cookie that
+  makes URLs language-specific by storing the language code in the URL path.
+
+* **Language-in-Domain** - a replacement for Django's language cookie that
+  makes URLs language-specific by mapping each domain for the site onto a
+  language.
 
 
 Installation
 ------------
 
-* Add `multilang` to `INSTALLED_APPS` in your settings file
+* Add `multilang_urls` to `INSTALLED_APPS` in your settings file
+
 * Add the following middlewares to `MIDDLEWARE_CLASSES` in your settings file:
-    * `multilang.middleware.URLCacheResetMiddleware` (must be before the `SessionMiddleware`)
+
+    * `multilang.middleware.URLCacheResetMiddleware` (must be before the
+      `SessionMiddleware`)
+
     * `multilang.middleware.MultilangMiddleware`
 
 
 Usage
 -----
 
-### Translatable URLs
+### Localizing URLs
 
 Use the `turl` function in urlresolvers in place of the usual `url` function
 when declaring URL patterns, combined with the `ugettext_noop` gettext function
@@ -76,18 +84,6 @@ with:
 (ie. with the domain)
 
 
-### Translatable DB
-
-The two-model translation system that's provided here requires that you
-manually specify a foreign key from your `LangTranslatable` model to your
-`LangAgnostic` or "core" model. This FK should be named "core" and should
-define its related_name as "translations". You also must define this
-LangAgnostic model even if you have no "language agnostic" fields to put
-in it, since it is used for finding translations.
-
-See `multilang/tests/models.py` for an example.
-
-
 ### Translation Switching
 
 Add MultilangMiddleware to the list of middleware classes and add the
@@ -107,25 +103,3 @@ To make a model compatible with this system, it needs to implement a
 
 The BlockLocaleMiddleware will block non-admins from accessing the site in any language
 listed in the `BLOCKED_LANGUAGES` setting in the settings file.
-
-
-### Admin
-
-Two ModelAdmin classes are provided under multilang.admin to create a better
-workflow in the Django administration when adding and editing multilang models.
-Subclass LangTranslatableModelAdmin and LangAgnosticModelAdmin accordingly when
-creating admin classes for translatable model pairs.
-
-Also make sure that the multilang/media folder is symlinked from your project's
-media folder as multilang:
-
-    ln -s path/to/multilang/media project_name/media/multilang
-
-If you would like to hide translatable model admin links from the main admin
-index page, you can set HIDE_TRANSLATABLE_APPS setting variable to True in
-your settings.py file. If you do this, you have to make sure that your admin
-url configuration is named "admin", as such:
-
-    turl(_(r'^admin/(.*)'), admin.site.root, name='admin'),
-
-See `multilang/tests/admin.py` for an example.
