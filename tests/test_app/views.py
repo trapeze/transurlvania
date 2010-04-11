@@ -35,7 +35,7 @@ def spangles_home(request):
 def news_story_detail(request, slug):
     return list_detail.object_detail(
             request,
-            NewsStory.objects.all(),
+            NewsStory.objects.filter(language=request.LANGUAGE_CODE),
             slug_field='slug',
             slug=slug,
             template_name='multilang_tests/newsstory_detail.html'
