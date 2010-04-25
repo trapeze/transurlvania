@@ -26,12 +26,12 @@ Installation
 
 * Add ``multilang_urls`` to ``INSTALLED_APPS`` in your settings file
 
-* Add the following middlewares to `MIDDLEWARE_CLASSES` in your settings file:
+* Add the following middlewares to ``MIDDLEWARE_CLASSES`` in your settings file:
 
-    * ``multilang.middleware.URLCacheResetMiddleware`` (must be before the
-      ``SessionMiddleware``)
+  * ``multilang.middleware.URLCacheResetMiddleware`` (must be before the
+    ``SessionMiddleware``)
 
-    * ``multilang.middleware.MultilangMiddleware``
+  * ``multilang.middleware.MultilangMiddleware``
 
 
 Usage
