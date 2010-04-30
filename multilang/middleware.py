@@ -37,7 +37,7 @@ class LangInDomainMiddleware(object):
                 request.LANGUAGE_CODE = translation.get_language()
 
 
-class MultilangMiddleware(object):
+class URLTransMiddleware(object):
     def process_request(self, request):
         request.url_translator = URLTranslator(request.build_absolute_uri())
 

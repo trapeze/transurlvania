@@ -27,7 +27,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
-    'multilang.middleware.MultilangMiddleware',
+    'multilang.middleware.URLTransMiddleware',
 )
 
 ROOT_URLCONF = 'tests.lang_prefixed_urls'
