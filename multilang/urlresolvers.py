@@ -1,6 +1,7 @@
 import re
 
 from django.conf import settings
+from django.conf.urls.defaults import handler404, handler500
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver, get_callable
 from django.core.urlresolvers import NoReverseMatch
 from django.core.urlresolvers import get_script_prefix
@@ -227,3 +228,12 @@ class LangSelectionRegexURLResolver(MultilangRegexURLResolver):
         lang = lang or get_language()
         return re.compile('^%s/' % lang)
     regex = property(get_regex)
+
+
+class PocketURLModule(object):
+    handler404 = handler404
+    handler500 = handler500
+
+    def __init__(self, pattern_list):
+        self.urlpatterns = pattern_list
+

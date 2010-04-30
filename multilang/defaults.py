@@ -3,10 +3,12 @@ from django.conf.urls.defaults import *
 from multilang.urlresolvers import LangSelectionRegexURLResolver
 from multilang.urlresolvers import MultilangRegexURLResolver
 from multilang.urlresolvers import MultilangRegexURLPattern
+from multilang.urlresolvers import PocketURLModule
 
 
-def lang_prefixed(urlconf_name):
-    return LangSelectionRegexURLResolver(urlconf_name)
+def lang_prefixed_patterns(prefix, *args):
+    pattern_list = patterns(prefix, *args)
+    return [LangSelectionRegexURLResolver(PocketURLModule(pattern_list))]
 
 
 def url(regex, view, kwargs=None, name=None, prefix=''):
