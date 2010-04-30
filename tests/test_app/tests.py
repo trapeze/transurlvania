@@ -51,6 +51,7 @@ class TransURLTestCase(TestCase):
         self.assertEqual(self.resolver.resolve('/trans-chose/')[0], things)
 
     def testMultiModuleMixedURL(self):
+        translation.activate('en')
         self.assertEqual(self.resolver.resolve('/multi-module-spangles/non-trans-stars/')[0], spangles_stars)
         translation.activate('fr')
         self.assertEqual(self.resolver.resolve('/module-multi-de-spangles/non-trans-stars/')[0], spangles_stars)
