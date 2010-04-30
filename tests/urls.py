@@ -1,16 +1,15 @@
-from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.utils.translation import ugettext_noop as _
 
-from multilang.urlresolvers import turl
+from multilang.defaults import *
 
 admin.autodiscover()
 
 urlpatterns = patterns('test_app.views',
-    (r'^$', 'home'),
-    turl(r'^admin/', include(admin.site.urls)),
+    url(r'^$', 'home'),
+    url(r'^admin/', include(admin.site.urls)),
     url(r'^non-trans-stuff/$', 'stuff', name='stuff'),
-    turl(_(r'^trans-things/$'), 'things'),
-    turl(_(r'^multi-module-spangles/'), include('spangles_urls')),
-    turl(_(r'^news-story/(?P<slug>[-\w]+)/$'), 'news_story_detail', {}, name='multilang_test_news_detail'),
+    url(_(r'^trans-things/$'), 'things'),
+    url(_(r'^multi-module-spangles/'), include('spangles_urls')),
+    url(_(r'^news-story/(?P<slug>[-\w]+)/$'), 'news_story_detail', {}, name='multilang_test_news_detail'),
 )

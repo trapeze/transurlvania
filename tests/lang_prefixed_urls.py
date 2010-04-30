@@ -1,8 +1,7 @@
 from django.conf import settings
-from django.conf.urls.defaults import *
-from django.contrib import admin
 from django.utils.translation import ugettext_noop as _
 
+from multilang.defaults import *
 from multilang.urlresolvers import turl, lang_prefixed
 
 

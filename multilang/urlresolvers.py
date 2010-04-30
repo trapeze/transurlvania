@@ -13,25 +13,6 @@ from django.utils.translation.trans_real import translation
 import multilang.settings
 
 
-def turl(regex, view, kwargs=None, name=None, prefix=''):
-    # Copied from django.conf.urls.defaults.url
-    if isinstance(view, (list,tuple)):
-        # For include(...) processing.
-        urlconf_module, app_name, namespace = view
-        return MultilangRegexURLResolver(regex, urlconf_module, kwargs, app_name=app_name, namespace=namespace)
-    else:
-        if isinstance(view, basestring):
-            if not view:
-                raise ImproperlyConfigured('Empty URL pattern view name not permitted (for pattern %r)' % regex)
-            if prefix:
-                view = prefix + '.' + view
-        return MultilangRegexURLPattern(regex, view, kwargs, name)
-
-
-def lang_prefixed(urlconf_name):
-    return LangSelectionRegexURLResolver(urlconf_name)
-
-
 _resolvers = {}
 def get_resolver(urlconf, lang):
     if urlconf is None:
@@ -231,6 +212,8 @@ class LangSelectionRegexURLResolver(MultilangRegexURLResolver):
     def __init__(self, urlconf_name, default_kwargs=None, app_name=None, namespace=None):
         # urlconf_name is a string representing the module containing urlconfs.
         self.urlconf_name = urlconf_name
+        if not isinstance(urlconf_name, basestring):
+            self._urlconf_module = self.urlconf_name
         self.callback = None
         self.default_kwargs = default_kwargs or {}
         self.namespace = namespace
