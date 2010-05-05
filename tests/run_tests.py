@@ -13,4 +13,4 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
 
 from django.core import management
 
-management.call_command('test', 'test_app')
+management.call_command('test', 'garfield')

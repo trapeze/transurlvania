@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-05-04 18:18-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: lang_prefixed_urls.py:12 urls.py:12
+msgid "^about-us/$"
+msgstr "^a-propos-de-nous/$"
+
+#: settings.py:11
+msgid "English"
+msgstr ""
+
+#: settings.py:12
+msgid "French"
+msgstr ""
+
+#: settings.py:13
+msgid "German"
+msgstr ""
+
+#: garfield/models.py:14
+msgid "name"
+msgstr ""
+
+#: garfield/models.py:15
+msgid "comic"
+msgstr ""
+
+#: garfield/models.py:16
+msgid "publish date/time"
+msgstr ""
+
+#: garfield/models.py:18
+msgid "public"
+msgstr ""
+
+#: garfield/models.py:19
+msgid "language"
+msgstr ""
+
+#: garfield/models.py:23
+msgid "comic strip"
+msgstr ""
+
+#: garfield/models.py:24
+msgid "comic strips"
+msgstr ""
+
+#: garfield/urls.py:8
+msgid "^the-president/$"
+msgstr "^le-président/$"
+
+#: garfield/urls.py:9
+msgid "^the-cat/$"
+msgstr "^le-chat/$"
+
+#: garfield/urls.py:10
+msgid "^the-cat/(?:P<strip_id>\\d+)/$"
+msgstr "^le-chat/(?:P<strip_id>\\d+)/$"
+
+#: templates/garfield/comic_strip_detail.html:8
+msgid "Garfield Comic Strip: "
+msgstr ""
+
+#: templates/garfield/comic_strip_list.html:6
+msgid "News Stories"
+msgstr ""
+
+#: templates/garfield/the_president.html:2
+msgid "Blow up the earth? I hope not! It's where I keep all my stuff!"
+msgstr ""

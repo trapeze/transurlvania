@@ -1,3 +1,4 @@
+{% load multilang_tags %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -5,6 +6,7 @@
 
 <body>
    {% block content %}{% endblock %}
+   <a class="french-version-link" href="{% this_page_in_lang "fr" %}">French Version</a>
 </body>
 </html>
 

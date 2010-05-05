@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+<br />
+<h1>{% trans "Garfield Comic Strip: " %}{{ object.headline }}</h1>
+<br />
+    {{ object.comic }}
+
+{% endblock %}

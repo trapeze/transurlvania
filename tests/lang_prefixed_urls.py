@@ -5,16 +5,14 @@ from multilang.defaults import *
 
 admin.autodiscover()
 
-urlpatterns = lang_prefixed_patterns('test_app.views',
+urlpatterns = lang_prefixed_patterns('garfield.views',
     url(r'^$', 'home'),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^non-trans-stuff/$', 'stuff', name='stuff'),
-    url(_(r'^trans-things/$'), 'things'),
-    url(_(r'^multi-module-spangles/'), include('spangles_urls')),
-    url(_(r'^news-story/(?P<slug>[-\w]+)/$'), 'news_story_detail', {}, name='multilang_test_news_detail'),
+    url(r'garfield/', include('garfield.urls')),
+    url(_(r'^about-us/$'), 'about_us', name='about_us'),
 )
 
 
-urlpatterns += patterns('test_app.views',
+urlpatterns += patterns('garfield.views',
     (r'^$', 'multilang_home'),
     )

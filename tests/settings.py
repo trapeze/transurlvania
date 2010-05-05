@@ -48,7 +48,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
 
     'multilang',
-    'test_app',
+    'garfield',
 )
 
 TEMPLATE_DIRS = (
