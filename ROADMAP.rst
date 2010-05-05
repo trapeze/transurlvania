@@ -1,7 +1,7 @@
 Multilang URLs Roadmap
 ======================
 
-0.1
+0.2
 ---
 
 * Refactor middleware to simplify translatable URL setup
