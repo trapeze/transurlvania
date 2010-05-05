@@ -9,6 +9,8 @@ Multilang URLs Roadmap
   * Automatically wrap base urlconf in lang prefixing
   * Add a lang detection + redirect view for language-agnostic root URL
 
+* Rewrite tests so the expected behaviour is more understandable.
+
 Future
 ------
 
