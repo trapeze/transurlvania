@@ -31,8 +31,10 @@ Installation
   * ``multilang.middleware.URLCacheResetMiddleware`` (must be before the
     ``SessionMiddleware``)
 
-  * ``multilang.middleware.MultilangMiddleware``
+  * ``multilang.middleware.URLTransMiddleware``
 
+* Add ``multilang.context_processors.translate`` to
+  ``TEMPLATE_CONTEXT_PROCESSORS``.
 
 Usage
 -----
@@ -87,55 +89,126 @@ name of the view or URL and the ``view_args`` parameter::
         ('name_of_view_or_url', self.language, (), {})
 
 
-Language Setting Via URL or Domain
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Making URLs Language-Specific
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use LangInPathMiddleware and special root URLconf to embed the language code
-in the URL path.
+multilang provides two ways for making URLs language-specific, meaning that
+the URL itself will indicate what language to use when generating the
+response.
 
-Use LangInDomainMiddleware and the ``MULTILANG_LANGUAGE_DOMAINS`` setting
-to have language determination based on the domain name.*
+Language in Path
+````````````````
 
-This supersedes Django's usual language detection, so any language specific url
-has a predictable language when visited. This also means that the individual,
-language-specific resources of the site can all be identified by URL.
+* Add ``multilang.middleware.LangInPathMiddleware`` to ``MIDDLEWARE_CLASSES``
+  after ``LocaleMiddleware``.
 
-See ``multilang/tests/settings.py`` and ``multilang/tests/lang_prefixed_urls.py``
-for an example.
+* Make these changes to your root URL conf module:
+
+  * If you haven't already done so, replace
+    ``from django.conf.urls.defaults import *`` with
+    ``from multilang.defaults import *``.
+
+  * Replace the call to ``patterns`` that populates the ``urlpatterns``
+    variable with a call to ``lang_prefixed_patterns``.
+
+  * To handle requests to the root URL itself ("/") or any URLs you wish to
+    keep outside of the language prefixing, declare the URL patterns as
+    normal inside a call to ``patterns`` and append the result to the
+    ``urlpatterns`` variable.
+
+  Here's an example of what a root URLconf might look like before adding
+  language prefixing::
+
+      from django.contrib import admin
+      from django.utils.translation import ugettext_noop as _
+
+      from multilang.defaults import *
+
+      admin.autodiscover()
+
+      urlpatterns = patterns('example.views',
+          url(r'^$', 'home'),
+          url(r'^admin/', include(admin.site.urls)),
+          url(_(r'^about-us/$'), 'about_us', name='about_us'),
+      )
+
+  And here's what it would look like after it's been converted::
+
+      from django.contrib import admin
+      from django.utils.translation import ugettext_noop as _
+
+      from multilang.defaults import *
+
+      admin.autodiscover()
+
+      urlpatterns = lang_prefixed_patterns('example.views',
+          url(r'^$', 'home'),
+          url(r'^admin/', include(admin.site.urls)),
+          url(_(r'^about-us/$'), 'about_us', name='about_us'),
+      )
 
 
-* You will also need to edit ``urls_dev.py`` to replace::
+      urlpatterns += patterns('example.views',
+          url(r'^$', 'language_selection_splash'),
+          )
 
-    from urls import urlpatterns
+Language in Domain
+``````````````````
 
-  with::
+* Add ``multilang.middleware.LangInPathMiddleware`` to ``MIDDLEWARE_CLASSES``
+  after ``LocaleMiddleware``.
 
-    from lang_prefixed_urls import urlpatterns
+* Add ``MULTILANG_LANGUAGE_DOMAINS`` to the project's settings module.
+
+  This settings should be a dictionary mapping language codes to two-element
+  tuples, where the first element is the domain for that language, and the
+  second element is the name of the site this represents.
+
+  Example::
+
+      MULTILANG_LANGUAGE_DOMAINS = {
+          'en': ('www.example-en.com', 'English Site'),
+          'fr': ('www.example-fr.com', 'French Site')
+      }
 
 
-* Use the ``multilang.utils.complete_url`` utility function to build full urls
-  (ie. with the domain)
+Language Switching
+``````````````````
 
+Django's language switching view is incompatible with multilang's techniques
+for setting site language using the URL. multilang provides its own language
+switching tools that make it possible to link directly to the loaded page's
+alternate-language equivalent.
 
-Translation Switching
-~~~~~~~~~~~~~~~~~~~~~
+The main requirement for this functionality is that
+`multilang.middleware.URLTransMiddleware` is in `MIDDLEWARE_CLASSES`, and
+``multilang.context_processors.translate`` is in
+``TEMPLATE_CONTEXT_PROCESSORS``. With these installed you can then use the
+``this_page_in_lang`` template tag to get the URL for the page currently being
+viewed in the language requested.
 
-Add MultilangMiddleware to the list of middleware classes and add the
-"translate" context processor to the list of template context processors to
-use the "``this_page_in_lang``" template tag. It will attempt to find the URL
-that represents the page being displayed, but in the language requested. If it
-is unable to determine an equivalent translation it will use the optional
-fallback url argument.
+So, ``{% this_page_in_lang "fr" %}`` would return the URL to the French
+version of the page being displayed.
 
-Use the provided decorators to annotate any views whose translations should
-be determined in a special way.
+The language switching code has two schemes for determining the URL to use:
 
-To make a model compatible with this system, it needs to implement a
-``get_translation`` method. The provided translatable DB solution does this.
+1. If there's a variable named ``object`` in the context, and that variable
+implements a method named ``get_translation``, the switcher will call the
+method with the requsted language, call ``get_absolute_url`` on what's
+returned and then use that URL for the translation.
 
+2. If the first method fails, the switcher will call multilang's
+reverse_for_language function using the view name and the parameters that were
+resolved from the current request.
+
+There are cases where neither of these schemes will work such as when the
+object isn't named ``object``, or when the same view is used by multiple URLs.
+In those cases, you can use the decorators provided by the ``translators``
+module to decorate the view and change which URL look-up scheme is used. You
+can also define your own look-up schemes.
 
 Language Based Blocking
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The BlockLocaleMiddleware will block non-admins from accessing the site in any language
+The ``BlockLocaleMiddleware`` will block non-admins from accessing the site in any language
 listed in the ``BLOCKED_LANGUAGES`` setting in the settings file.
