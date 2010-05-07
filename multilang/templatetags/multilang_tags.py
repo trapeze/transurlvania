@@ -111,7 +111,7 @@ def trans_in_lang(string, lang):
 
     Usage:
 
-        {{ var|trans_in_lang:"fr" %}
+        {{ var|trans_in_lang:"fr" }}
 
     """
     if check_for_language(lang):
