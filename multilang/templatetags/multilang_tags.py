@@ -71,7 +71,7 @@ def this_page_in_lang(parser, token):
         fallback = bits['args'][1]
     elif len(bits['args']) > 2:
         raise template.TemplateSyntaxError, "%s tag takes at most two arguments" % bits['tag_name']
-    
+
     return ThisPageInLangNode(bits['args'][0], fallback, bits['context_var'])
 
 
@@ -83,7 +83,7 @@ class ThisPageInLangNode(template.Node):
             self.fallback = template.Variable(fallback)
         else:
             self.fallback = None
-        
+
     def render(self, context):
         try:
             output = context['_url_translator'].get_url(
@@ -91,10 +91,10 @@ class ThisPageInLangNode(template.Node):
             )
         except (KeyError, NoTranslationError), e:
             output = ''
-        
+
         if (not output) and self.fallback:
             output = self.fallback.resolve(context)
-        
+
         if self.context_var:
             context[self.context_var] = output
             return ''
