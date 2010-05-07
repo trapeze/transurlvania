@@ -30,7 +30,7 @@ MIDDLEWARE_CLASSES = (
     'multilang.middleware.URLTransMiddleware',
 )
 
-ROOT_URLCONF = 'tests.lang_prefixed_urls'
+ROOT_URLCONF = 'tests.urls'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.auth',

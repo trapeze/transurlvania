@@ -21,6 +21,9 @@ from garfield.views import comic_strip_list, comic_strip_detail, landing
 from garfield.views import jim_davis
 
 
+french_version_anchor_re = re.compile(r'<a class="french-version-link" href="([^"]*)">')
+
+
 class TransURLTestCase(TestCase):
     """
     Test the translatable URL functionality
@@ -28,159 +31,57 @@ class TransURLTestCase(TestCase):
     the LANGUAGES list in settings.
     """
     def setUp(self):
-        self.resolver = get_resolver('tests.urls')
+        translation.activate('en')
 
     def tearDown(self):
         translation.deactivate()
-
-    def testRootURLIsLangAgnostic(self):
-        translation.activate('en')
-        self.assertEqual(self.resolver.resolve('/')[0], home)
-        translation.activate('fr')
-        self.assertEqual(self.resolver.resolve('/')[0], home)
+        clear_url_caches()
 
     def testNormalURL(self):
-        translation.activate('en')
-        self.assertEqual(self.resolver.resolve('/garfield/')[0], landing)
+        self.assertEqual(get_resolver(None).resolve('/en/garfield/')[0], landing)
         translation.activate('fr')
-        self.assertEqual(self.resolver.resolve('/garfield/')[0], landing)
+        self.assertEqual(get_resolver(None).resolve('/fr/garfield/')[0], landing)
 
     def testTransMatches(self):
-        translation.activate('en')
-        self.assertEqual(self.resolver.resolve('/about-us/')[0], about_us)
+        self.assertEqual(get_resolver(None).resolve('/en/about-us/')[0], about_us)
         translation.activate('fr')
-        self.assertEqual(self.resolver.resolve('/a-propos-de-nous/')[0], about_us)
+        self.assertEqual(get_resolver(None).resolve('/fr/a-propos-de-nous/')[0], about_us)
 
     def testMultiModuleMixedURL(self):
-        translation.activate('en')
-        self.assertEqual(self.resolver.resolve('/garfield/jim-davis/')[0], jim_davis)
+        self.assertEqual(get_resolver(None).resolve('/en/garfield/jim-davis/')[0], jim_davis)
         translation.activate('fr')
-        self.assertEqual(self.resolver.resolve('/garfield/jim-davis/')[0], jim_davis)
+        self.assertEqual(get_resolver(None).resolve('/fr/garfield/jim-davis/')[0], jim_davis)
 
     def testMultiModuleTransURL(self):
-        translation.activate('en')
-        self.assertEqual(self.resolver.resolve(u'/garfield/the-president/')[0], the_president)
+        self.assertEqual(get_resolver(None).resolve(u'/en/garfield/the-president/')[0], the_president)
         translation.activate('fr')
-        self.assertEqual(self.resolver.resolve(u'/garfield/le-président/')[0], the_president)
+        self.assertEqual(get_resolver(None).resolve(u'/fr/garfield/le-président/')[0], the_president)
 
     def testRootURLReverses(self):
-        translation.activate('en')
-        self.assertEqual(reverse(home, 'tests.urls'), '/')
+        self.assertEqual(reverse(multilang_home, 'tests.urls'), '/')
         translation.activate('fr')
-        self.assertEqual(reverse(home, 'tests.urls'), '/')
+        self.assertEqual(reverse(multilang_home, 'tests.urls'), '/')
 
     def testNormalURLReverses(self):
         translation.activate('en')
-        self.assertEqual(reverse(landing, 'tests.urls'), '/garfield/')
+        self.assertEqual(reverse(landing), '/en/garfield/')
+        clear_url_caches()
         translation.activate('fr')
-        self.assertEqual(reverse(landing, 'tests.urls'), '/garfield/')
+        self.assertEqual(reverse(landing), '/fr/garfield/')
 
     def testTransReverses(self):
         translation.activate('en')
-        self.assertEqual(reverse(the_president, 'tests.urls'), '/garfield/the-president/')
+        self.assertEqual(reverse(the_president), '/en/garfield/the-president/')
         # Simulate URLResolver cache reset between requests
         clear_url_caches()
         translation.activate('fr')
-        self.assertEqual(reverse(the_president, 'tests.urls'), http.urlquote(u'/garfield/le-président/'))
+        self.assertEqual(reverse(the_president), http.urlquote(u'/fr/garfield/le-président/'))
 
     def testReverseForLangSupportsAdmin(self):
         try:
             reverse_for_language('admin:garfield_comicstrip_add', 'en')
         except NoReverseMatch, e:
             self.fail("Reverse lookup failed: %s" % e)
-
-
-class ReverseForLanguageTestCase(TestCase):
-    """
-    Test the `reverse_for_language` functionality.
-    These tests require that English (en) and French (fr) are both listed in
-    the LANGUAGES list in settings.
-    """
-    def setUp(self):
-        self.resolver = get_resolver('tests.urls')
-
-    def tearDown(self):
-        translation.deactivate()
-        multilang.settings.LANGUAGE_DOMAINS = {}
-
-    def testSameDomain(self):
-        multilang.settings.LANGUAGE_DOMAINS = {}
-
-        translation.activate('en')
-        self.assertEquals(
-            reverse_for_language(the_president, 'en', 'tests.urls'),
-            '/garfield/the-president/'
-        )
-        self.assertEquals(
-            reverse_for_language(the_president, 'fr', 'tests.urls'),
-            http.urlquote('/garfield/le-président/')
-        )
-
-        translation.activate('fr')
-        self.assertEquals(
-            reverse_for_language(the_president, 'fr', 'tests.urls'),
-            http.urlquote('/garfield/le-président/')
-        )
-        self.assertEquals(
-            reverse_for_language(the_president, 'en', 'tests.urls'),
-            '/garfield/the-president/'
-        )
-
-    def testOneDifferentDomain(self):
-        multilang.settings.LANGUAGE_DOMAINS = {
-            'fr': ('www.trapeze-fr.com', 'French Site')
-        }
-
-        fr_domain = multilang.settings.LANGUAGE_DOMAINS['fr'][0]
-
-        translation.activate('en')
-        self.assertEquals(
-            reverse_for_language(about_us, 'en', 'tests.urls'),
-            '/about-us/'
-        )
-        self.assertEquals(
-            reverse_for_language(about_us, 'fr', 'tests.urls'),
-            u'http://%s/a-propos-de-nous/' % fr_domain
-        )
-
-        translation.activate('fr')
-        self.assertEquals(
-            reverse_for_language(about_us, 'fr', 'tests.urls'),
-            u'http://%s/a-propos-de-nous/' % fr_domain
-        )
-        self.assertEquals(
-            reverse_for_language(about_us, 'en', 'tests.urls'),
-            '/about-us/'
-        )
-
-    def testBothDifferentDomains(self):
-        multilang.settings.LANGUAGE_DOMAINS = {
-            'en': ('www.trapeze.com', 'English Site'),
-            'fr': ('www.trapeze-fr.com', 'French Site')
-        }
-
-        en_domain = multilang.settings.LANGUAGE_DOMAINS['en'][0]
-        fr_domain = multilang.settings.LANGUAGE_DOMAINS['fr'][0]
-
-        translation.activate('en')
-        self.assertEquals(
-            reverse_for_language(about_us, 'en', 'tests.urls'),
-            'http://%s/about-us/' % en_domain
-        )
-        self.assertEquals(
-            reverse_for_language(about_us, 'fr', 'tests.urls'),
-            'http://%s/a-propos-de-nous/' % fr_domain
-        )
-
-        translation.activate('fr')
-        self.assertEquals(
-            reverse_for_language(about_us, 'fr', 'tests.urls'),
-            'http://%s/a-propos-de-nous/' % fr_domain
-        )
-        self.assertEquals(
-            reverse_for_language(about_us, 'en', 'tests.urls'),
-            'http://%s/about-us/' % en_domain
-        )
 
 
 class LangInPathTestCase(TestCase):
@@ -190,7 +91,7 @@ class LangInPathTestCase(TestCase):
     MIDDLEWARE_CLASSES for these tests to run properly.
     """
     def setUp(self):
-        self.client = Client()
+        translation.activate('en')
 
     def tearDown(self):
         translation.deactivate()
@@ -222,6 +123,27 @@ class LangInPathTestCase(TestCase):
         self.assertTemplateUsed(response, 'garfield/comicstrip_list.html')
         self.assertEqual(response.context.get('LANGUAGE_CODE', None), 'fr')
 
+    def testReverseForLanguage(self):
+        translation.activate('en')
+        self.assertEquals(
+            reverse_for_language(the_president, 'en'),
+            '/en/garfield/the-president/'
+        )
+        self.assertEquals(
+            reverse_for_language(the_president, 'fr'),
+            http.urlquote('/fr/garfield/le-président/')
+        )
+
+        translation.activate('fr')
+        self.assertEquals(
+            reverse_for_language(the_president, 'fr'),
+            http.urlquote('/fr/garfield/le-président/')
+        )
+        self.assertEquals(
+            reverse_for_language(the_president, 'en'),
+            '/en/garfield/the-president/'
+        )
+
 
 class LangInDomainTestCase(TestCase):
     """
@@ -229,8 +151,17 @@ class LangInDomainTestCase(TestCase):
     LangInDomainMiddleware must be listed in MIDDLEWARE_CLASSES for these tests
     to run properly.
     """
+    urls = 'tests.urls_without_lang_prefix'
+
+    def setUp(self):
+        multilang.settings.LANGUAGE_DOMAINS = {
+            'en': ('www.trapeze-en.com', 'English Site'),
+            'fr': ('www.trapeze-fr.com', 'French Site')
+        }
+
     def tearDown(self):
         translation.deactivate()
+        multilang.settings.LANGUAGE_DOMAINS = {}
 
     def testRootURL(self):
         translation.activate('en')
@@ -238,6 +169,7 @@ class LangInDomainTestCase(TestCase):
         response = client.get('/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context.get('LANGUAGE_CODE'), 'fr')
+        multilang.settings.LANGUAGE_DOMAINS = {}
 
         translation.activate('fr')
         self.client = Client(SERVER_NAME='www.trapeze-en.com')
@@ -247,10 +179,9 @@ class LangInDomainTestCase(TestCase):
 
     def testURLWithPrefixes(self):
         translation.activate('en')
-        client = Client(SERVER_NAME='www.trapeze-fr.com')
-        response = client.get('/en/garfield/')
+        response = self.client.get('/en/garfield/', SERVER_NAME='www.trapeze-fr.com')
         self.assertEqual(response.status_code, 404)
-        response = client.get('/fr/garfield/')
+        response = self.client.get('/fr/garfield/', SERVER_NAME='www.trapeze-fr.com')
         self.assertEqual(response.context.get('LANGUAGE_CODE'), 'fr')
 
         translation.activate('fr')
@@ -260,6 +191,71 @@ class LangInDomainTestCase(TestCase):
         response = client.get('/en/garfield/')
         self.assertEqual(response.context.get('LANGUAGE_CODE'), 'en')
 
+    def testReverseForLangWithOneDifferentDomain(self):
+        multilang.settings.LANGUAGE_DOMAINS = {
+            'fr': ('www.trapeze-fr.com', 'French Site')
+        }
+
+        fr_domain = multilang.settings.LANGUAGE_DOMAINS['fr'][0]
+
+        translation.activate('en')
+        self.assertEquals(reverse_for_language(about_us, 'en'), '/about-us/')
+        self.assertEquals(
+            reverse_for_language(about_us, 'fr'),
+            u'http://%s/a-propos-de-nous/' % fr_domain
+        )
+
+        translation.activate('fr')
+        self.assertEquals(
+            reverse_for_language(about_us, 'fr'),
+            u'http://%s/a-propos-de-nous/' % fr_domain
+        )
+        self.assertEquals(
+            reverse_for_language(about_us, 'en'),
+            '/about-us/'
+        )
+
+    def testBothDifferentDomains(self):
+        multilang.settings.LANGUAGE_DOMAINS = {
+            'en': ('www.trapeze.com', 'English Site'),
+            'fr': ('www.trapeze-fr.com', 'French Site')
+        }
+
+        en_domain = multilang.settings.LANGUAGE_DOMAINS['en'][0]
+        fr_domain = multilang.settings.LANGUAGE_DOMAINS['fr'][0]
+
+        translation.activate('en')
+        self.assertEquals(
+            reverse_for_language(about_us, 'en', 'tests.urls'),
+            'http://%s/en/about-us/' % en_domain
+        )
+        self.assertEquals(
+            reverse_for_language(about_us, 'fr', 'tests.urls'),
+            'http://%s/fr/a-propos-de-nous/' % fr_domain
+        )
+
+        translation.activate('fr')
+        self.assertEquals(
+            reverse_for_language(about_us, 'fr', 'tests.urls'),
+            'http://%s/fr/a-propos-de-nous/' % fr_domain
+        )
+        self.assertEquals(
+            reverse_for_language(about_us, 'en', 'tests.urls'),
+            'http://%s/en/about-us/' % en_domain
+        )
+
+    def testDefaultViewBasedSwitchingWithSeparateDomains(self):
+        multilang.settings.LANGUAGE_DOMAINS = {
+            'fr': ('www.trapeze-fr.com', 'French Site')
+        }
+
+        response = self.client.get('/about-us/')
+        french_version_url = french_version_anchor_re.search(response.content).group(1)
+        self.assertEqual(french_version_url,
+            'http://www.trapeze-fr.com/a-propos-de-nous/'
+        )
+
+
 
 class LanguageSwitchingTestCase(TestCase):
     fixtures = ['test.json']
@@ -267,31 +263,14 @@ class LanguageSwitchingTestCase(TestCase):
     Test the language switching functionality of multilang (which also tests
     the `this_page_in_lang` template tag).
     """
-    def setUp(self):
-        self.client = Client()
-        self.french_version_anchor_re = re.compile(r'<a class="french-version-link" href="([^"]*)">')
-        multilang.settings.LANGUAGE_DOMAINS = {}
-
     def tearDown(self):
         translation.deactivate()
-        multilang.settings.LANGUAGE_DOMAINS = {}
 
     def testDefaultViewBasedSwitching(self):
         response = self.client.get('/en/about-us/')
         self.assertTemplateUsed(response, 'about_us.html')
-        french_version_url = self.french_version_anchor_re.search(response.content).group(1)
+        french_version_url = french_version_anchor_re.search(response.content).group(1)
         self.assertEqual(french_version_url, '/fr/a-propos-de-nous/')
-
-    def testDefaultViewBasedSwitchingWithSeparateDomains(self):
-        multilang.settings.LANGUAGE_DOMAINS = {
-            'fr': ('www.trapeze-fr.com', 'French Site')
-        }
-
-        response = self.client.get('/en/about-us/')
-        french_version_url = self.french_version_anchor_re.search(response.content).group(1)
-        self.assertEqual(french_version_url,
-            'http://www.trapeze-fr.com/fr/a-propos-de-nous/'
-        )
 
     def testThisPageInLangTagWithFallBack(self):
 
