@@ -15,6 +15,7 @@ from multilang import urlresolvers as multilang_resolvers
 from multilang.translators import NoTranslationError
 from multilang.urlresolvers import reverse_for_language
 from multilang.utils import complete_url
+from multilang.views import detect_language_and_redirect
 
 from garfield.views import home, multilang_home, about_us, the_president
 from garfield.views import comic_strip_list, comic_strip_detail, landing
@@ -58,9 +59,9 @@ class TransURLTestCase(TestCase):
         self.assertEqual(get_resolver(None).resolve(u'/fr/garfield/le-président/')[0], the_president)
 
     def testRootURLReverses(self):
-        self.assertEqual(reverse(multilang_home, 'tests.urls'), '/')
+        self.assertEqual(reverse(detect_language_and_redirect, 'tests.urls'), '/')
         translation.activate('fr')
-        self.assertEqual(reverse(multilang_home, 'tests.urls'), '/')
+        self.assertEqual(reverse(detect_language_and_redirect, 'tests.urls'), '/')
 
     def testNormalURLReverses(self):
         translation.activate('en')
@@ -96,12 +97,10 @@ class LangInPathTestCase(TestCase):
     def tearDown(self):
         translation.deactivate()
 
-    def testRootURLIsLangAgnostic(self):
+    def testLangDetectionViewRedirectsToLang(self):
         self.client.cookies['django_language'] = 'de'
         response = self.client.get('/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'multilang_home.html')
-        self.assertEqual(response.context.get('LANGUAGE_CODE', None), 'de')
+        self.assertRedirects(response, '/de/')
 
     def testNormalURL(self):
         response = self.client.get('/en/garfield/')

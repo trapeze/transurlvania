@@ -13,6 +13,6 @@ urlpatterns = lang_prefixed_patterns('garfield.views',
 )
 
 
-urlpatterns += patterns('garfield.views',
-    (r'^$', 'multilang_home'),
+urlpatterns += patterns('multilang.views',
+    (r'^$', 'detect_language_and_redirect'),
     )
