@@ -40,21 +40,51 @@ Usage
 Localizing URLs
 ~~~~~~~~~~~~~~~
 
-Use the ``turl`` function in ``urlresolvers`` in place of the usual ``url``
-function when declaring URL patterns, combined with the ``ugettext_noop``
-gettext function and the URLs you declare will become translatable using the
-normal gettext translation system.
+Replace the usual::
 
-Any language-aware models that define ``get_absolute_url`` should decorate it with
-``multilang_permalink``, from ``multilang.decorators`` so that the returned URLs
-will be properly translated to the language of the object. The method should
-return a list or tuple with this pattern::
+    from django.conf.urls.defaults import *
 
-    ('name_of_view_or_url', language_of_object, view_args, view_kwargs)
+with::
 
-``language_of_object`` should be the language code of the object, so if the
-model uses multilang's translatable DB solution, it would be
-``self.language``.
+    from multilang_urls.defaults import *
+
+You will need the ugettext_noop function if you want to mark any URL patterns
+for localization::
+
+    from django.utils.translation import ugettext_noop as _
+
+To make an URL pattern localizable, first ensure that it is in the
+``url(...)`` form, then wrap the URL pattern itself in a gettext function
+call::
+
+    url(_(r'^about-us/$'), 'about_us', name='about_us'),
+
+Now, when you next run the ``makemessages`` management command, these URL
+patterns will be collected in the .po file along with all the other
+localizable strings.
+
+Notes:
+
+* because the strings in the po file are not raw strings, some regex
+  characters will be escaped, so the URL patterns are sometimes less readable
+
+* When providing a translation for a URL pattern that includes regex elements,
+  ensure that the translation contains the same regex elements, otherwise the
+  pattern matching behaviour may vary from language to language.
+
+Localizing ``get_absolute_url``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Any language-aware models that define ``get_absolute_url`` should decorate it
+with ``multilang_permalink``, from ``multilang.decorators`` so that the
+returned URLs will be properly translated to the language of the object.
+``multilang_permalink`` accepts the same tuple values as ``permalink`` except
+that the language code to be used for the URL should be inserted between the
+name of the view or URL and the ``view_args`` parameter::
+
+    @multilang_permalink
+    def get_absolute_url(self):
+        ('name_of_view_or_url', self.language, (), {})
 
 
 Language Setting Via URL or Domain
