@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_noop as _
 
-from multilang.defaults import *
+from transurlvania.defaults import *
 
 admin.autodiscover()
 
@@ -13,6 +13,6 @@ urlpatterns = lang_prefixed_patterns('garfield.views',
 )
 
 
-urlpatterns += patterns('multilang.views',
+urlpatterns += patterns('transurlvania.views',
     (r'^$', 'detect_language_and_redirect'),
     )

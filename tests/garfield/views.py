@@ -4,10 +4,6 @@ from django.http import HttpResponse
 from garfield.models import ComicStrip
 
 
-def multilang_home(request):
-    return simple.direct_to_template(request, 'multilang_home.html')
-
-
 def home(request):
     return simple.direct_to_template(request, 'home.html')
 

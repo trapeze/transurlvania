@@ -1,6 +1,6 @@
 from django.core.urlresolvers import NoReverseMatch
 
-from multilang.urlresolvers import reverse_for_language
+from transurlvania.urlresolvers import reverse_for_language
 
 
 class NoTranslationError(Exception):

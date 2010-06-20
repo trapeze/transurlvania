@@ -24,16 +24,16 @@ Features
 Installation
 ------------
 
-* Add ``multilang_urls`` to ``INSTALLED_APPS`` in your settings file
+* Add ``transurlvania`` to ``INSTALLED_APPS`` in your settings file
 
 * Add the following middlewares to ``MIDDLEWARE_CLASSES`` in your settings file:
 
-  * ``multilang.middleware.URLCacheResetMiddleware`` (must be before the
+  * ``transurlvania.middleware.URLCacheResetMiddleware`` (must be before the
     ``SessionMiddleware``)
 
-  * ``multilang.middleware.URLTransMiddleware``
+  * ``transurlvania.middleware.URLTransMiddleware``
 
-* Add ``multilang.context_processors.translate`` to
+* Add ``transurlvania.context_processors.translate`` to
   ``TEMPLATE_CONTEXT_PROCESSORS``.
 
 Usage
@@ -48,7 +48,7 @@ Replace the usual::
 
 with::
 
-    from multilang_urls.defaults import *
+    from transurlvania.defaults import *
 
 You will need the ugettext_noop function if you want to mark any URL patterns
 for localization::
@@ -78,13 +78,13 @@ Localizing ``get_absolute_url``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Any language-aware models that define ``get_absolute_url`` should decorate it
-with ``multilang_permalink``, from ``multilang.decorators`` so that the
+with ``permalink_in_lang``, from ``transurlvania.decorators`` so that the
 returned URLs will be properly translated to the language of the object.
-``multilang_permalink`` accepts the same tuple values as ``permalink`` except
+``permalink_in_lang`` accepts the same tuple values as ``permalink`` except
 that the language code to be used for the URL should be inserted between the
 name of the view or URL and the ``view_args`` parameter::
 
-    @multilang_permalink
+    @permalink_in_lang
     def get_absolute_url(self):
         ('name_of_view_or_url', self.language, (), {})
 
@@ -92,21 +92,21 @@ name of the view or URL and the ``view_args`` parameter::
 Making URLs Language-Specific
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-multilang provides two ways for making URLs language-specific, meaning that
+transurlvania provides two ways for making URLs language-specific, meaning that
 the URL itself will indicate what language to use when generating the
 response.
 
 Language in Path
 ````````````````
 
-* Add ``multilang.middleware.LangInPathMiddleware`` to ``MIDDLEWARE_CLASSES``
+* Add ``transurlvania.middleware.LangInPathMiddleware`` to ``MIDDLEWARE_CLASSES``
   after ``LocaleMiddleware``.
 
 * Make these changes to your root URL conf module:
 
   * If you haven't already done so, replace
     ``from django.conf.urls.defaults import *`` with
-    ``from multilang.defaults import *``.
+    ``from transurlvania.defaults import *``.
 
   * Replace the call to ``patterns`` that populates the ``urlpatterns``
     variable with a call to ``lang_prefixed_patterns``.
@@ -122,7 +122,7 @@ Language in Path
       from django.contrib import admin
       from django.utils.translation import ugettext_noop as _
 
-      from multilang.defaults import *
+      from transurlvania.defaults import *
 
       admin.autodiscover()
 
@@ -137,7 +137,7 @@ Language in Path
       from django.contrib import admin
       from django.utils.translation import ugettext_noop as _
 
-      from multilang.defaults import *
+      from transurlvania.defaults import *
 
       admin.autodiscover()
 
@@ -155,7 +155,7 @@ Language in Path
 Language in Domain
 ``````````````````
 
-* Add ``multilang.middleware.LangInPathMiddleware`` to ``MIDDLEWARE_CLASSES``
+* Add ``transurlvania.middleware.LangInPathMiddleware`` to ``MIDDLEWARE_CLASSES``
   after ``LocaleMiddleware``.
 
 * Add ``MULTILANG_LANGUAGE_DOMAINS`` to the project's settings module.
@@ -175,14 +175,14 @@ Language in Domain
 Language Switching
 ``````````````````
 
-Django's language switching view is incompatible with multilang's techniques
-for setting site language using the URL. multilang provides its own language
-switching tools that make it possible to link directly to the loaded page's
-alternate-language equivalent.
+Django's language switching view is incompatible with transurlvania's
+techniques for setting site language using the URL. transurlvania provides its
+own language switching tools that make it possible to link directly to the
+loaded page's alternate-language equivalent.
 
 The main requirement for this functionality is that
-`multilang.middleware.URLTransMiddleware` is in `MIDDLEWARE_CLASSES`, and
-``multilang.context_processors.translate`` is in
+``transurlvania.middleware.URLTransMiddleware`` is in ``MIDDLEWARE_CLASSES``, and
+``transurlvania.context_processors.translate`` is in
 ``TEMPLATE_CONTEXT_PROCESSORS``. With these installed you can then use the
 ``this_page_in_lang`` template tag to get the URL for the page currently being
 viewed in the language requested.
@@ -197,7 +197,7 @@ implements a method named ``get_translation``, the switcher will call the
 method with the requsted language, call ``get_absolute_url`` on what's
 returned and then use that URL for the translation.
 
-2. If the first method fails, the switcher will call multilang's
+2. If the first method fails, the switcher will call transurlvania's
 reverse_for_language function using the view name and the parameters that were
 resolved from the current request.
 

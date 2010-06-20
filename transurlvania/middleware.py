@@ -2,8 +2,8 @@ from django.conf import settings
 from django.core import urlresolvers
 from django.utils import translation
 
-from multilang.settings import LANGUAGE_DOMAINS
-from multilang.translators import URLTranslator, AutodetectScheme
+from transurlvania.settings import LANGUAGE_DOMAINS
+from transurlvania.translators import URLTranslator, AutodetectScheme
 
 
 class LangInPathMiddleware(object):

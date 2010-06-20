@@ -1,4 +1,4 @@
-from multilang.translators import BasicScheme, ObjectBasedScheme, DirectToURLScheme
+from transurlvania.translators import BasicScheme, ObjectBasedScheme, DirectToURLScheme
 
 
 def translate_using_url(url_name):
@@ -27,8 +27,8 @@ def _translate_using(scheme):
     return translate_decorator
 
 
-def multilang_permalink(func):
-    from multilang.urlresolvers import reverse_for_language
+def permalink_in_lang(func):
+    from transurlvania.urlresolvers import reverse_for_language
     def inner(*args, **kwargs):
         bits = func(*args, **kwargs)
         return reverse_for_language(bits[0], bits[1], None, *bits[2:4])

@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from multilang.decorators import multilang_permalink
+from transurlvania.decorators import permalink_in_lang
 
 
 class ComicStrip(models.Model):
@@ -26,6 +26,6 @@ class ComicStrip(models.Model):
     def __unicode__(self):
         return self.name
 
-    @multilang_permalink
+    @permalink_in_lang
     def get_absolute_url(self):
         return ('garfield_comic_strip_detail', self.language, (), {'slug': self.slug,})

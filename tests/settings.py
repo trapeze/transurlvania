@@ -1,7 +1,7 @@
 import os
 
 DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = os.path.join(os.path.dirname(__file__), 'multilang_test.db')
+DATABASE_NAME = os.path.join(os.path.dirname(__file__), 'transurlvania_test.db')
 
 LANGUAGE_CODE = 'en'
 
@@ -19,15 +19,15 @@ MULTILANG_LANGUAGE_DOMAINS = {
 }
 
 MIDDLEWARE_CLASSES = (
-    'multilang.middleware.URLCacheResetMiddleware',
+    'transurlvania.middleware.URLCacheResetMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'multilang.middleware.LangInPathMiddleware',
-    'multilang.middleware.LangInDomainMiddleware',
+    'transurlvania.middleware.LangInPathMiddleware',
+    'transurlvania.middleware.LangInDomainMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
-    'multilang.middleware.URLTransMiddleware',
+    'transurlvania.middleware.URLTransMiddleware',
 )
 
 ROOT_URLCONF = 'tests.urls'
@@ -38,7 +38,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
-    'multilang.context_processors.translate',
+    'transurlvania.context_processors.translate',
 )
 
 INSTALLED_APPS = (
@@ -47,7 +47,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
 
-    'multilang',
+    'transurlvania',
     'garfield',
 )
 

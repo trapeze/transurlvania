@@ -11,7 +11,7 @@ from django.utils.regex_helper import normalize
 from django.utils.translation import get_language
 from django.utils.translation.trans_real import translation
 
-import multilang.settings
+import transurlvania.settings
 
 
 _resolvers = {}
@@ -95,7 +95,7 @@ def reverse_for_language(viewname, lang, urlconf=None, args=None, kwargs=None, p
             if re.search(u'^%s' % pattern, candidate, re.UNICODE):
                 iri = u'%s%s' % (prefix, candidate)
                 # If we have a separate domain for lang, put that in the iri
-                domain = multilang.settings.LANGUAGE_DOMAINS.get(lang, None)
+                domain = transurlvania.settings.LANGUAGE_DOMAINS.get(lang, None)
                 if domain:
                     iri = u'http://%s%s' % (domain[0], iri)
                 return iri_to_uri(iri)

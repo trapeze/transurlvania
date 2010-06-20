@@ -126,6 +126,6 @@ msgstr ""
 msgid "^news-story/(?P<slug>[-\\w]+)/$"
 msgstr ""
 
-#: tests/templates/multilang_tests/stuff.html:2
+#: tests/templates/transurlvania_tests/stuff.html:2
 msgid "Blow up the earth? I hope not! It's where I keep all my stuff!"
 msgstr ""

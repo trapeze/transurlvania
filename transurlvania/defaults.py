@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import *
 
-from multilang.urlresolvers import LangSelectionRegexURLResolver
-from multilang.urlresolvers import MultilangRegexURLResolver
-from multilang.urlresolvers import MultilangRegexURLPattern
-from multilang.urlresolvers import PocketURLModule
+from transurlvania.urlresolvers import LangSelectionRegexURLResolver
+from transurlvania.urlresolvers import MultilangRegexURLResolver
+from transurlvania.urlresolvers import MultilangRegexURLPattern
+from transurlvania.urlresolvers import PocketURLModule
 
 
 def lang_prefixed_patterns(prefix, *args):

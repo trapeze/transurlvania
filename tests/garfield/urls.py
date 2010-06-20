@@ -1,6 +1,6 @@
 from django.utils.translation import ugettext_noop as _
 
-from multilang.defaults import *
+from transurlvania.defaults import *
 
 
 urlpatterns = patterns('garfield.views',

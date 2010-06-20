@@ -1,7 +1,7 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import get_language
 
-from multilang.settings import LANGUAGE_DOMAINS
+from transurlvania.settings import LANGUAGE_DOMAINS
 
 
 def complete_url(url, lang=None):

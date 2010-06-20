@@ -10,14 +10,14 @@ from django.template import Context, Template, TemplateSyntaxError
 from django.test import TestCase, Client
 from django.utils import translation, http
 
-import multilang.settings
-from multilang import urlresolvers as multilang_resolvers
-from multilang.translators import NoTranslationError
-from multilang.urlresolvers import reverse_for_language
-from multilang.utils import complete_url
-from multilang.views import detect_language_and_redirect
+import transurlvania.settings
+from transurlvania import urlresolvers as transurlvania_resolvers
+from transurlvania.translators import NoTranslationError
+from transurlvania.urlresolvers import reverse_for_language
+from transurlvania.utils import complete_url
+from transurlvania.views import detect_language_and_redirect
 
-from garfield.views import home, multilang_home, about_us, the_president
+from garfield.views import home, about_us, the_president
 from garfield.views import comic_strip_list, comic_strip_detail, landing
 from garfield.views import jim_davis
 
@@ -153,14 +153,14 @@ class LangInDomainTestCase(TestCase):
     urls = 'tests.urls_without_lang_prefix'
 
     def setUp(self):
-        multilang.settings.LANGUAGE_DOMAINS = {
+        transurlvania.settings.LANGUAGE_DOMAINS = {
             'en': ('www.trapeze-en.com', 'English Site'),
             'fr': ('www.trapeze-fr.com', 'French Site')
         }
 
     def tearDown(self):
         translation.deactivate()
-        multilang.settings.LANGUAGE_DOMAINS = {}
+        transurlvania.settings.LANGUAGE_DOMAINS = {}
 
     def testRootURL(self):
         translation.activate('en')
@@ -168,7 +168,7 @@ class LangInDomainTestCase(TestCase):
         response = client.get('/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context.get('LANGUAGE_CODE'), 'fr')
-        multilang.settings.LANGUAGE_DOMAINS = {}
+        transurlvania.settings.LANGUAGE_DOMAINS = {}
 
         translation.activate('fr')
         self.client = Client(SERVER_NAME='www.trapeze-en.com')
@@ -191,11 +191,11 @@ class LangInDomainTestCase(TestCase):
         self.assertEqual(response.context.get('LANGUAGE_CODE'), 'en')
 
     def testReverseForLangWithOneDifferentDomain(self):
-        multilang.settings.LANGUAGE_DOMAINS = {
+        transurlvania.settings.LANGUAGE_DOMAINS = {
             'fr': ('www.trapeze-fr.com', 'French Site')
         }
 
-        fr_domain = multilang.settings.LANGUAGE_DOMAINS['fr'][0]
+        fr_domain = transurlvania.settings.LANGUAGE_DOMAINS['fr'][0]
 
         translation.activate('en')
         self.assertEquals(reverse_for_language(about_us, 'en'), '/about-us/')
@@ -215,13 +215,13 @@ class LangInDomainTestCase(TestCase):
         )
 
     def testBothDifferentDomains(self):
-        multilang.settings.LANGUAGE_DOMAINS = {
+        transurlvania.settings.LANGUAGE_DOMAINS = {
             'en': ('www.trapeze.com', 'English Site'),
             'fr': ('www.trapeze-fr.com', 'French Site')
         }
 
-        en_domain = multilang.settings.LANGUAGE_DOMAINS['en'][0]
-        fr_domain = multilang.settings.LANGUAGE_DOMAINS['fr'][0]
+        en_domain = transurlvania.settings.LANGUAGE_DOMAINS['en'][0]
+        fr_domain = transurlvania.settings.LANGUAGE_DOMAINS['fr'][0]
 
         translation.activate('en')
         self.assertEquals(
@@ -244,7 +244,7 @@ class LangInDomainTestCase(TestCase):
         )
 
     def testDefaultViewBasedSwitchingWithSeparateDomains(self):
-        multilang.settings.LANGUAGE_DOMAINS = {
+        transurlvania.settings.LANGUAGE_DOMAINS = {
             'fr': ('www.trapeze-fr.com', 'French Site')
         }
 
@@ -259,7 +259,7 @@ class LangInDomainTestCase(TestCase):
 class LanguageSwitchingTestCase(TestCase):
     fixtures = ['test.json']
     """
-    Test the language switching functionality of multilang (which also tests
+    Test the language switching functionality of transurlvania (which also tests
     the `this_page_in_lang` template tag).
     """
     def tearDown(self):
@@ -273,7 +273,7 @@ class LanguageSwitchingTestCase(TestCase):
 
     def testThisPageInLangTagWithFallBack(self):
 
-        template = Template('{% load multilang_tags %}'
+        template = Template('{% load transurlvania_tags %}'
             '{% this_page_in_lang "fr" "/en/home/" %}'
         )
         output = template.render(Context({}))
@@ -281,7 +281,7 @@ class LanguageSwitchingTestCase(TestCase):
 
     def testThisPageInLangTagWithVariableFallBack(self):
         translation.activate('en')
-        template = Template('{% load multilang_tags %}'
+        template = Template('{% load transurlvania_tags %}'
             '{% url garfield_landing as myurl %}'
             '{% this_page_in_lang "fr" myurl %}'
         )
@@ -290,7 +290,7 @@ class LanguageSwitchingTestCase(TestCase):
 
     def testThisPageInLangTagNoArgs(self):
         try:
-            template = Template('{% load multilang_tags %}'
+            template = Template('{% load transurlvania_tags %}'
                 '{% this_page_in_lang %}'
             )
         except TemplateSyntaxError, e:
@@ -300,7 +300,7 @@ class LanguageSwitchingTestCase(TestCase):
 
     def testThisPageInLangTagExtraArgs(self):
         try:
-            template = Template('{% load multilang_tags %}'
+            template = Template('{% load transurlvania_tags %}'
                 '{% this_page_in_lang "fr" "/home/" "/sadf/" %}'
             )
         except TemplateSyntaxError, e:
@@ -323,13 +323,13 @@ class TransInLangTagTestCase(TestCase):
         Tests the basic usage of the tag.
         """
         translation.activate('en')
-        template_content = '{% load multilang_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"fr" }}{% endwith %}'
+        template_content = '{% load transurlvania_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"fr" }}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'Français')
 
         translation.activate('fr')
-        template_content = '{% load multilang_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"en" }}{% endwith %}'
+        template_content = '{% load transurlvania_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"en" }}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'French')
@@ -339,7 +339,7 @@ class TransInLangTagTestCase(TestCase):
         Tests the tag when using a variable as the lang argument.
         """
         translation.activate('en')
-        template_content = '{% load multilang_tags %}{% with "French" as myvar %}{% with "fr" as lang %}{{ myvar|trans_in_lang:lang }}{% endwith %}{% endwith %}'
+        template_content = '{% load transurlvania_tags %}{% with "French" as myvar %}{% with "fr" as lang %}{{ myvar|trans_in_lang:lang }}{% endwith %}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'Français')
@@ -349,13 +349,13 @@ class TransInLangTagTestCase(TestCase):
         Tests that the tag does not change the language.
         """
         translation.activate('en')
-        template_content = '{% load i18n %}{% load multilang_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"fr" }}|{% trans "French" %}{% endwith %}'
+        template_content = '{% load i18n %}{% load transurlvania_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"fr" }}|{% trans "French" %}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'Français|French')
 
         translation.activate('fr')
-        template_content = '{% load i18n %}{% load multilang_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"en" }}|{% trans "French" %}{% endwith %}'
+        template_content = '{% load i18n %}{% load transurlvania_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"en" }}|{% trans "French" %}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'French|Français')
@@ -365,7 +365,7 @@ class TransInLangTagTestCase(TestCase):
         Tests the tag when there is no translation for the given string.
         """
         translation.activate('en')
-        template_content = '{% load multilang_tags %}{% with "somethinginvalid" as myvar %}{{ myvar|trans_in_lang:"fr" }}{% endwith %}'
+        template_content = '{% load transurlvania_tags %}{% with "somethinginvalid" as myvar %}{{ myvar|trans_in_lang:"fr" }}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'somethinginvalid')
@@ -375,7 +375,7 @@ class TransInLangTagTestCase(TestCase):
         Tests the tag when it is used repeatedly for different languages.
         """
         translation.activate('en')
-        template_content = '{% load multilang_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"en" }}|{{ myvar|trans_in_lang:"fr" }}|{{ myvar|trans_in_lang:"de" }}{% endwith %}'
+        template_content = '{% load transurlvania_tags %}{% with "French" as myvar %}{{ myvar|trans_in_lang:"en" }}|{{ myvar|trans_in_lang:"fr" }}|{{ myvar|trans_in_lang:"de" }}{% endwith %}'
         template = Template(template_content)
         output = template.render(Context())
         self.assertEquals(output, u'French|Français|Französisch')

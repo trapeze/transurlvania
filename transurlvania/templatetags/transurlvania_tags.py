@@ -4,7 +4,7 @@ from django.template.defaultfilters import stringfilter
 from django.utils.translation import check_for_language
 from django.utils.translation.trans_real import translation
 
-from multilang.translators import NoTranslationError
+from transurlvania.translators import NoTranslationError
 
 
 register = template.Library()
