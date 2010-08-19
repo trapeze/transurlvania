@@ -31,7 +31,8 @@ Installation
   * ``transurlvania.middleware.URLCacheResetMiddleware`` (must be before the
     ``SessionMiddleware``)
 
-  * ``transurlvania.middleware.URLTransMiddleware``
+  * ``transurlvania.middleware.URLTransMiddleware`` (must be before the
+	``CommonMiddleware`` in order for APPEND_SLASH to work)
 
 * Add ``transurlvania.context_processors.translate`` to
   ``TEMPLATE_CONTEXT_PROCESSORS``.
