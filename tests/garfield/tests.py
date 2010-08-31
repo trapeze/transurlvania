@@ -294,7 +294,7 @@ class LanguageSwitchingTestCase(TestCase):
                 '{% this_page_in_lang %}'
             )
         except TemplateSyntaxError, e:
-            self.assertEquals(e.message, 'this_page_in_lang tag requires at least one argument')
+            self.assertEquals(unicode(e), u'this_page_in_lang tag requires at least one argument')
         else:
             self.fail()
 
@@ -304,7 +304,7 @@ class LanguageSwitchingTestCase(TestCase):
                 '{% this_page_in_lang "fr" "/home/" "/sadf/" %}'
             )
         except TemplateSyntaxError, e:
-            self.assertEquals(e.message, 'this_page_in_lang tag takes at most two arguments')
+            self.assertEquals(unicode(e), u'this_page_in_lang tag takes at most two arguments')
         else:
             self.fail()
 
