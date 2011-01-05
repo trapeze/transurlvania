@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='transurlvania',
-    version='0.0.1',
+    version='0.2.0ALPHA',
     author='Sam Bull',
     author_email='sbull@trapeze.com',
     url='https://github.com/trapeze/transurlvania',
