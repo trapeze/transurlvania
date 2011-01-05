@@ -1,16 +1,6 @@
 Multilang URLs Roadmap
 ======================
 
-0.2
----
-
-* Refactor middleware to simplify translatable URL setup
-
-  * Automatically wrap base urlconf in lang prefixing
-  * Add a lang detection + redirect view for language-agnostic root URL
-
-* Rewrite tests so the expected behaviour is more understandable.
-
 Future
 ------
 
