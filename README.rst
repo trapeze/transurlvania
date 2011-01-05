@@ -156,7 +156,7 @@ Language in Path
 Language in Domain
 ``````````````````
 
-* Add ``transurlvania.middleware.LangInPathMiddleware`` to ``MIDDLEWARE_CLASSES``
+* Add ``transurlvania.middleware.LangInDomainMiddleware`` to ``MIDDLEWARE_CLASSES``
   after ``LocaleMiddleware``.
 
 * Add ``MULTILANG_LANGUAGE_DOMAINS`` to the project's settings module.
