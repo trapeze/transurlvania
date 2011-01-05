@@ -12,7 +12,7 @@ class ComicStrip(models.Model):
     A Garfield comic strip
     """
     name = models.CharField(_('name'), max_length=255)
-    comic = models.ImageField(_('comic'), upload_to="comics/")
+    comic = models.URLField(_('comic'))
     publication_date = models.DateTimeField(_('publish date/time'),
         default=datetime.datetime.now)
     public = models.BooleanField(_('public'), default=True)
