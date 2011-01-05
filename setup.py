@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 from setuptools import setup, find_packages
 
@@ -8,15 +10,21 @@ f.close()
 setup(
     name='transurlvania',
     version='0.2.0a', 
-    description="A collection of URL-related utilities for multi-lingual projects",
-    long_description=readme,
-    author='sbull',
+    author='Sam Bull',
+    author_email='sam@pocketuniverse.ca'
     url='https://github.com/trapeze/transurlvania',
-    packages=find_packages(),
-    zip_safe=False,
+    description="This application provides a collection of URL-related utilities for multi-lingual projects.",
+    long_description=readme,
+    packages=find_packages(exclude=['tests', 'tests.garfield']),
     classifiers=[
-        'Programming Language :: Python',
         'Framework :: Django',
+        #'Development Status :: 5 - Production/Stable',
+        'Environment :: Web Environment',
+        'Programming Language :: Python',
+        'Intended Audience :: Developers',
+        'Operating System :: OS Independent',
+        'License :: OSI Approved :: BSD License',
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     install_requires=[
         'Django>=1.0'
