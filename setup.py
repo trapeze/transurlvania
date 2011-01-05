@@ -29,4 +29,5 @@ setup(
     install_requires=[
         'Django>=1.0'
     ],
+    include_package_data=True,
 )
