@@ -1,7 +1,7 @@
 0.2.1
 =====
 
-Tagged on January 5, 2010 by Sam Bull <sam@pocketuniverse.ca>
+Tagged on January 5, 2011 by Sam Bull <sam@pocketuniverse.ca>
 
 * Added setup.py
 * Made test runner compatible with virtualenv
