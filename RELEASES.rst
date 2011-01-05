@@ -1,3 +1,13 @@
+0.2.1
+=====
+
+Tagged on January 5, 2010 by Sam Bull <sam@pocketuniverse.ca>
+
+* Added setup.py
+* Made test runner compatible with virtualenv
+* Cleaned up roadmap
+* Fixed typo in readme
+
 transurlvania-0.2.0ALPHA
 ========================
 
