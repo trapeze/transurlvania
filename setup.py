@@ -11,7 +11,7 @@ setup(
     name='transurlvania',
     version='0.2.1',
     author='Sam Bull',
-    author_email='sam@pocketuniverse.ca'
+    author_email='sam@pocketuniverse.ca',
     url='https://github.com/trapeze/transurlvania',
     description="This application provides a collection of URL-related utilities for multi-lingual projects.",
     long_description=readme,
@@ -27,7 +27,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     install_requires=[
-        'Django>=1.0'
+        'Django>=1.0',
     ],
     include_package_data=True,
 )
