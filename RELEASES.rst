@@ -1,3 +1,11 @@
+0.2.3
+=====
+
+Tagged on March 12, 2011 by Sam Bull <sam@pocketuniverse.ca>
+
+* Fixed empty regex issue
+* Added support for URL patterns without explicit call to url function
+
 0.2.2
 =====
 
