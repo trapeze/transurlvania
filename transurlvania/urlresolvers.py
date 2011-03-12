@@ -154,7 +154,14 @@ class MultilangRegexURLResolver(RegexURLResolver):
 
     def get_regex(self, lang=None):
         lang = lang or get_language()
-        return self._regex_dict.setdefault(lang, re.compile(translation(lang).ugettext(self._raw_regex), re.UNICODE))
+        # Only attempt to get the translation of the regex if the regex string
+        # is not empty. The empty string is handled as a special case by
+        # Django's gettext. It's where it stores its metadata.
+        if self._raw_regex != '':
+            regex_in_lang = translation(lang).ugettext(self._raw_regex)
+        else:
+            regex_in_lang = self._raw_regex
+        return self._regex_dict.setdefault(lang, re.compile(regex_in_lang, re.UNICODE))
     regex = property(get_regex)
 
     def _build_reverse_dict_for_lang(self, lang):

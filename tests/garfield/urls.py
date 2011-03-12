@@ -9,5 +9,5 @@ urlpatterns = patterns('garfield.views',
     (_(r'^the-cat/$'), 'comic_strip_list', {}, 'garfield_the_cat'),
     url(_(r'^the-cat/(?:P<strip_id>\d+)/$'), 'comic_strip_detail',
             name='garfield_comic_strip_detail'),
-    url(r'^jim-davis/$', 'jim_davis', name='garfield_jim_davis'),
+    url(r'', include('garfield.extra_urls')),
 )
