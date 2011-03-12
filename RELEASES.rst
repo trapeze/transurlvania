@@ -1,3 +1,10 @@
+0.2.2
+=====
+
+Tagged on January 5, 2011 by Sam Bull <sam@pocketuniverse.ca>
+
+* Fixed test code to remove PIL dependency.
+
 0.2.1
 =====
 
