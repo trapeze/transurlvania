@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+from django.core.urlresolvers import RegexURLPattern
 
 from transurlvania.urlresolvers import LangSelectionRegexURLResolver
 from transurlvania.urlresolvers import MultilangRegexURLResolver
@@ -24,3 +25,15 @@ def url(regex, view, kwargs=None, name=None, prefix=''):
             if prefix:
                 view = prefix + '.' + view
         return MultilangRegexURLPattern(regex, view, kwargs, name)
+
+# Copied from django.conf.urls.defaults so that it's invoking the url func
+# defined here instead of the built-in one.
+def patterns(prefix, *args):
+    pattern_list = []
+    for t in args:
+        if isinstance(t, (list, tuple)):
+            t = url(prefix=prefix, *t)
+        elif isinstance(t, RegexURLPattern):
+            t.add_prefix(prefix)
+        pattern_list.append(t)
+    return pattern_list
