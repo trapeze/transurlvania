@@ -40,10 +40,10 @@ class ObjectBasedScheme(BasicScheme):
         try:
             return context[self.object_name].get_translation(lang).get_absolute_url()
         except KeyError:
-            raise NoTranslationError('Could not find object named %s in context.' % self.object_name)
+            raise NoTranslationError(u'Could not find object named %s in context.' % self.object_name)
         except AttributeError:
-            raise NoTranslationError('Unable to get translation of object %s '
-                                     'in language %s' % (context[self.object_name], lang))
+            raise NoTranslationError(u'Unable to get translation of object %s '
+                                     u'in language %s' % (context[self.object_name], lang))
 
 
 class DirectToURLScheme(BasicScheme):
