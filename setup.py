@@ -9,7 +9,7 @@ f.close()
 
 setup(
     name='transurlvania',
-    version='0.2.2',
+    version='0.2.4',
     author='Sam Bull',
     author_email='sam@pocketuniverse.ca',
     url='https://github.com/trapeze/transurlvania',
