@@ -1,3 +1,10 @@
+0.2.4
+=====
+
+Tagged on November 4, 2011 by Sam Bull <sam@pocketuniverse.ca>
+
+* Turned error strings into unicode strings
+
 0.2.3
 =====
 
